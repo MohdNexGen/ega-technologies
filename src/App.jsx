@@ -60,7 +60,7 @@ function App() {
   return (
     <div className="app">
       <nav className="navbar">
-        <h1 className="logo">NexGen Technology</h1>
+        <h1 className="logo">EGA Technology</h1>
 
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
           ☰
@@ -104,10 +104,10 @@ function App() {
             </div>
 
             <div className="about-box">
-              <h2>Why Choose NexGen?</h2>
+              <h2>Why Choose EGA?</h2>
 
               <p>
-                NexGen Technology provides practical web development training
+                EGA Technology provides practical web development training
                 focused on real-world skills. Students learn by building
                 projects, solving problems, and creating professional portfolios.
               </p>
@@ -157,7 +157,7 @@ function App() {
           <h2>Courses</h2>
 
           <p className="section-intro">
-            NexGen focuses on practical skills, real projects, and step-by-step
+            EGA focuses on practical skills, real projects, and step-by-step
             training for beginners and future developers.
           </p>
 
@@ -262,7 +262,7 @@ function App() {
 
       {page === "contact" && (
         <section className="page-box">
-          <h2>Contact NexGen</h2>
+          <h2>Contact EGA</h2>
 
           <div className="contact-grid">
             <div className="contact-card">
@@ -281,7 +281,7 @@ function App() {
             </div>
 
             <div className="contact-card">
-              <h3>🎓 NexGen</h3>
+              <h3>🎓 EGA</h3>
               <p>Practical coding skills and real-world projects</p>
             </div>
           </div>
@@ -290,9 +290,9 @@ function App() {
 
       <footer>
         <div className="footer-content">
-          <h3>NexGen Technology</h3>
+          <h3>EGA Technology</h3>
           <p>Practical web development training with real-world projects.</p>
-          <p>© 2026 NexGen Technology. All rights reserved.</p>
+          <p>© 2026 EGA Technology. All rights reserved.</p>
         </div>
       </footer>
     </div>
