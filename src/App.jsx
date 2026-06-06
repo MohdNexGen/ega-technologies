@@ -3,393 +3,300 @@ import { useState } from "react";
 import emailjs from "@emailjs/browser";
 
 function App() {
+  const [page, setPage] = useState("home");
+  const [message, setMessage] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-const [page,setPage]=useState("home");
-const [message,setMessage]=useState("");
+  function goToPage(pageName) {
+    setPage(pageName);
+    setMenuOpen(false);
+  }
 
-function handleSubmit(e){
+  function handleSubmit(e) {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage("⏳ Submitting your application. Please wait...");
 
-e.preventDefault();
+    const templateParams = {
+      student_name: e.target.name.value,
+      student_email: e.target.email.value,
+      student_phone: e.target.phone.value,
+      student_course: e.target.course.value,
+      student_message: e.target.message.value,
+    };
 
-const templateParams={
+    emailjs
+      .send(
+        "nexgen_gmail",
+        "template_zvfw3qd",
+        templateParams,
+        "H5xDt1e48EHqf_U4U"
+      )
+      .then(() => {
+        return emailjs.send(
+          "nexgen_gmail",
+          "template_rbz2rme",
+          templateParams,
+          "H5xDt1e48EHqf_U4U"
+        );
+      })
+      .then(() => {
+        setMessage("✅ Application sent successfully. Confirmation email sent.");
+        e.target.reset();
+      })
+      .catch(() => {
+        setMessage("❌ Failed. Please check your internet and try again.");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
 
-student_name:
-e.target.name.value,
+        setTimeout(() => {
+          setMessage("");
+        }, 6000);
+      });
+  }
 
-student_email:
-e.target.email.value,
+  return (
+    <div className="app">
+      <nav className="navbar">
+        <h1 className="logo">NexGen Technology</h1>
 
-student_phone:
-e.target.phone.value,
+        <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+          ☰
+        </button>
 
-student_course:
-e.target.course.value,
+        <div className={`nav-links ${menuOpen ? "open" : ""}`}>
+          <button onClick={() => goToPage("home")}>Home</button>
+          <button onClick={() => goToPage("courses")}>Courses</button>
+          <button onClick={() => goToPage("register")}>Register</button>
+          <button onClick={() => goToPage("contact")}>Contact</button>
+        </div>
+      </nav>
 
-student_message:
-e.target.message.value
+      {page === "home" && (
+        <section className="hero-section">
+          <div className="hero-content">
+            <p className="badge">Frontend • Backend • Full Stack</p>
 
-};
+            <h1>Become a Full Stack Web Developer</h1>
 
+            <p>
+              Learn HTML, CSS, JavaScript, React, Node.js, Express, Git, GitHub,
+              deployment, and real-world projects step by step.
+            </p>
 
-emailjs.send(
+            <div className="stats">
+              <div className="stat-card">
+                <h2>5+</h2>
+                <p>Years Teaching Web Development in Canada</p>
+              </div>
 
-"nexgen_gmail",
+              <div className="stat-card">
+                <h2>100%</h2>
+                <p>Practical Learning</p>
+              </div>
 
-"template_zvfw3qd",
+              <div className="stat-card">
+                <h2>Real</h2>
+                <p>Projects & Portfolio</p>
+              </div>
+            </div>
 
-templateParams,
+            <div className="about-box">
+              <h2>Why Choose NexGen?</h2>
 
-"H5xDt1e48EHqf_U4U"
+              <p>
+                NexGen Technology provides practical web development training
+                focused on real-world skills. Students learn by building
+                projects, solving problems, and creating professional portfolios.
+              </p>
 
-)
+              <p>
+                Training is based on over 5 years of web development teaching
+                experience in Canada and focuses on helping students gain skills
+                for freelancing, employment, and personal projects.
+              </p>
+            </div>
 
-.then(()=>{
+            <div className="class-info">
+              <h2>Class Information</h2>
 
-return emailjs.send(
+              <div className="info-grid">
+                <div className="info-card">
+                  <h3>📚 Course Type</h3>
+                  <p>Frontend, Backend and Full Stack Development</p>
+                </div>
 
-"nexgen_gmail",
+                <div className="info-card">
+                  <h3>💻 Learning Style</h3>
+                  <p>Practical projects and hands-on coding</p>
+                </div>
 
-"template_rbz2rme",
+                <div className="info-card">
+                  <h3>🌍 Opportunities</h3>
+                  <p>Portfolio development, freelancing and job preparation</p>
+                </div>
 
-templateParams,
+                <div className="info-card">
+                  <h3>🎯 Goal</h3>
+                  <p>Build professional websites and real-world applications</p>
+                </div>
+              </div>
+            </div>
 
-"H5xDt1e48EHqf_U4U"
+            <button className="main-btn" onClick={() => goToPage("register")}>
+              Apply Now
+            </button>
+          </div>
+        </section>
+      )}
 
-);
+      {page === "courses" && (
+        <section className="page-box">
+          <h2>Courses</h2>
 
-})
+          <p className="section-intro">
+            NexGen focuses on practical skills, real projects, and step-by-step
+            training for beginners and future developers.
+          </p>
 
-.then(()=>{
+          <div className="course-grid">
+            <div className="course-card">
+              <h3>🌐 Frontend Development</h3>
+              <p>
+                Learn HTML5, CSS3, JavaScript ES6, React, responsive design,
+                navigation menus, forms, and modern UI development.
+              </p>
+            </div>
 
-setMessage(
+            <div className="course-card">
+              <h3>⚙️ Backend Development</h3>
+              <p>
+                Learn Node.js, Express.js, APIs, routing, server setup,
+                authentication, and deployment fundamentals.
+              </p>
+            </div>
 
-"✅ Application sent successfully. Confirmation email sent."
+            <div className="course-card">
+              <h3>☁️ Git & GitHub</h3>
+              <p>
+                Learn version control, repositories, collaboration, commits,
+                branches, and publishing projects online.
+              </p>
+            </div>
 
-);
+            <div className="course-card">
+              <h3>🚀 Career Preparation</h3>
+              <p>
+                Build a professional portfolio, real-world projects, client
+                websites, and prepare for international opportunities.
+              </p>
+            </div>
 
-e.target.reset();
+            <div className="course-card">
+              <h3>📱 Responsive Design</h3>
+              <p>
+                Create websites that work perfectly on desktop, tablet, and
+                mobile devices.
+              </p>
+            </div>
 
-setTimeout(()=>{
+            <div className="course-card">
+              <h3>🛠 Real Projects</h3>
+              <p>
+                Build school websites, portfolios, registration systems, and
+                deployment-ready applications.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
 
-setMessage("");
+      {page === "register" && (
+        <section className="page-box">
+          <h2>Student Registration</h2>
 
-},5000);
+          <p className="notice">
+            Fill the form below. A confirmation email will be sent.
+          </p>
 
-})
+          <form className="form" onSubmit={handleSubmit}>
+            <input name="name" placeholder="Student Name" required />
 
-.catch(()=>{
+            <input
+              name="email"
+              type="email"
+              placeholder="Email Address"
+              required
+            />
 
-setMessage(
+            <input name="phone" placeholder="Phone Number" />
 
-"❌ Failed. Try again."
+            <select name="course">
+              <option>Frontend Development</option>
+              <option>React Projects</option>
+              <option>Backend Development</option>
+              <option>Node + Express</option>
+              <option>Git & GitHub</option>
+              <option>Full Stack Web Development</option>
+            </select>
 
-);
+            <textarea name="message" placeholder="Message"></textarea>
 
-});
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span className="loading-text">
+                  <span className="spinner"></span>
+                  Submitting...
+                </span>
+              ) : (
+                "Submit Application"
+              )}
+            </button>
+          </form>
 
+          <p className={isSubmitting ? "processing" : "success"}>{message}</p>
+        </section>
+      )}
+
+      {page === "contact" && (
+        <section className="page-box">
+          <h2>Contact NexGen</h2>
+
+          <div className="contact-grid">
+            <div className="contact-card">
+              <h3>📧 Email</h3>
+              <p>i.developer2026@gmail.com</p>
+            </div>
+
+            <div className="contact-card">
+              <h3>📍 Location</h3>
+              <p>Ethiopia</p>
+            </div>
+
+            <div className="contact-card">
+              <h3>💻 Training</h3>
+              <p>Frontend, Backend, Full Stack Development</p>
+            </div>
+
+            <div className="contact-card">
+              <h3>🎓 NexGen</h3>
+              <p>Practical coding skills and real-world projects</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <footer>
+        <div className="footer-content">
+          <h3>NexGen Technology</h3>
+          <p>Practical web development training with real-world projects.</p>
+          <p>© 2026 NexGen Technology. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
 }
-
-
-
-return(
-
-<div className="hero">
-
-
-<nav className="navbar">
-
-<h1 className="logo">
-
-NexGen Technology
-
-</h1>
-
-
-<div className="nav-links">
-
-<button
-onClick={()=>setPage("home")}
->
-
-Home
-
-</button>
-
-
-<button
-onClick={()=>setPage("courses")}
->
-
-Courses
-
-</button>
-
-
-<button
-onClick={()=>setPage("contact")}
->
-
-Contact
-
-</button>
-
-
-</div>
-
-</nav>
-
-
-
-
-{page==="home"&&(
-
-<div className="hero-content">
-
-<h1>
-
-Learn Coding.
-Build Projects.
-Get International Opportunities.
-
-</h1>
-
-
-<p>
-
-NexGen teaches
-HTML,
-CSS,
-JavaScript,
-React,
-Node,
-Express,
-Git
-
-</p>
-
-
-<button
-
-className="btn"
-
-onClick={()=>
-setPage(
-"register"
-)
-}
-
->
-
-Apply Now
-
-</button>
-
-
-</div>
-
-)}
-
-
-
-
-{page==="register"&&(
-
-<div className="page-box">
-
-<h2>
-
-Student Registration
-
-</h2>
-
-
-<form
-
-className="form"
-
-onSubmit={handleSubmit}
-
->
-
-
-<input
-
-name="name"
-
-placeholder=
-"Student Name"
-
-required
-
-/>
-
-
-<input
-
-name="email"
-
-type="email"
-
-placeholder=
-"Email Address"
-
-required
-
-/>
-
-
-<input
-
-name="phone"
-
-placeholder=
-"Phone Number"
-
-/>
-
-
-
-<select
-
-name="course"
-
->
-
-<option>
-
-Frontend Development
-
-</option>
-
-
-<option>
-
-React Projects
-
-</option>
-
-
-<option>
-
-Backend Development
-
-</option>
-
-
-<option>
-
-Node + Express
-
-</option>
-
-</select>
-
-
-
-<textarea
-
-name="message"
-
-placeholder=
-"Message"
-
-></textarea>
-
-
-
-<button
-type="submit"
->
-
-Submit Application
-
-</button>
-
-
-</form>
-
-
-
-<p className="success">
-
-{message}
-
-</p>
-
-
-</div>
-
-)}
-
-
-
-
-{page==="courses"&&(
-
-<div className="page-box">
-
-<h2>
-
-Courses
-
-</h2>
-
-<ul>
-
-<li>
-Frontend Development
-</li>
-
-<li>
-Backend Development
-</li>
-
-<li>
-React Projects
-</li>
-
-<li>
-Git & GitHub
-</li>
-
-</ul>
-
-</div>
-
-)}
-
-
-
-
-{page==="contact"&&(
-
-<div className="page-box">
-
-<h2>
-
-Contact
-
-</h2>
-
-<p>
-
-Email:
-
-i.developer2026@gmail.com
-
-</p>
-
-</div>
-
-)}
-
-
-
-</div>
-
-);
-
-}
-
 
 export default App;
