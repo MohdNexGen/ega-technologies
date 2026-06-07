@@ -1,8 +1,46 @@
 import { useState } from "react";
+import emailjs from "@emailjs/browser";
 import "./App.css";
+import Courses from "./pages/Courses";
 
 function App() {
   const [section, setSection] = useState("home");
+  const [message, setMessage] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const templateParams = {
+      student_name: e.target.name.value,
+      student_email: e.target.email.value,
+      student_phone: e.target.phone.value,
+      student_course: e.target.course.value,
+      student_message: e.target.message.value,
+    };
+
+    emailjs
+      .send(
+        "nexgen_gmail",
+        "template_zvfw3qd",
+        templateParams,
+        "H5xDt1e48EHqf_U4U"
+      )
+      .then(() => {
+        return emailjs.send(
+          "nexgen_gmail",
+          "template_rbz2rme",
+          templateParams,
+          "H5xDt1e48EHqf_U4U"
+        );
+      })
+      .then(() => {
+        setMessage("Message sent successfully. Confirmation email sent.");
+        e.target.reset();
+      })
+      .catch(() => {
+        setMessage("Failed to send. Please try again.");
+      });
+  }
 
   return (
     <div>
@@ -20,7 +58,9 @@ function App() {
       {section === "home" && <Home setSection={setSection} />}
       {section === "about" && <About />}
       {section === "courses" && <Courses />}
-      {section === "contact" && <Contact />}
+      {section === "contact" && (
+        <Contact handleSubmit={handleSubmit} message={message} />
+      )}
     </div>
   );
 }
@@ -60,50 +100,7 @@ function About() {
   );
 }
 
-function Courses() {
-  return (
-    <section className="page-card">
-      <h2>Course Content</h2>
-
-      <div className="course-list">
-        <div className="lesson">
-          <span className="check">✓</span>
-          <div>
-            <h3>1. What is HTML?</h3>
-            <p>▣ 4min</p>
-          </div>
-        </div>
-
-        <div className="lesson active">
-          <span className="check">✓</span>
-          <div>
-            <h3>2. HTML Heading Elements</h3>
-            <p>▣ 14min</p>
-          </div>
-          <button className="resource-btn">Resources ⌄</button>
-        </div>
-
-        <div className="lesson">
-          <span className="check">✓</span>
-          <div>
-            <h3>3. HTML Paragraph Elements</h3>
-            <p>▣ 9min</p>
-          </div>
-        </div>
-
-        <div className="lesson">
-          <span className="check gray">✓</span>
-          <div>
-            <h3>4. Self Closing Tags</h3>
-            <p>▣ 12min</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Contact() {
+function Contact({ handleSubmit, message }) {
   return (
     <section className="page-card">
       <h2>Contact EGA</h2>
@@ -112,12 +109,28 @@ function Contact() {
         Students can contact EGA to register or ask about available courses.
       </p>
 
-      <form className="contact-form">
-        <input type="text" placeholder="Your Name" />
-        <input type="email" placeholder="Your Email" />
-        <textarea placeholder="Your Message"></textarea>
+      <form className="contact-form" onSubmit={handleSubmit}>
+        <input name="name" type="text" placeholder="Your Name" required />
+
+        <input name="email" type="email" placeholder="Your Email" required />
+
+        <input name="phone" type="text" placeholder="Phone Number" />
+
+        <select name="course" required>
+          <option value="">Select Course</option>
+          <option>Frontend Development</option>
+          <option>Backend Development</option>
+          <option>HTML Basics</option>
+          <option>React Projects</option>
+          <option>Git and GitHub</option>
+        </select>
+
+        <textarea name="message" placeholder="Your Message" required></textarea>
+
         <button type="submit">Send Message</button>
       </form>
+
+      {message && <p className="success">{message}</p>}
     </section>
   );
 }
