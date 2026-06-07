@@ -19,12 +19,7 @@ function App() {
     };
 
     emailjs
-      .send(
-        "nexgen_gmail",
-        "template_zvfw3qd",
-        templateParams,
-        "H5xDt1e48EHqf_U4U"
-      )
+      .send("nexgen_gmail", "template_zvfw3qd", templateParams, "H5xDt1e48EHqf_U4U")
       .then(() => {
         return emailjs.send(
           "nexgen_gmail",
@@ -57,7 +52,9 @@ function App() {
 
       {section === "home" && <Home setSection={setSection} />}
       {section === "about" && <About />}
-      {section === "courses" && <Courses />}
+      {section === "courses" && (
+        <Courses goHome={() => setSection("home")} />
+      )}
       {section === "contact" && (
         <Contact handleSubmit={handleSubmit} message={message} />
       )}
@@ -111,9 +108,7 @@ function Contact({ handleSubmit, message }) {
 
       <form className="contact-form" onSubmit={handleSubmit}>
         <input name="name" type="text" placeholder="Your Name" required />
-
         <input name="email" type="email" placeholder="Your Email" required />
-
         <input name="phone" type="text" placeholder="Phone Number" />
 
         <select name="course" required>

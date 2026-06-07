@@ -2,10 +2,10 @@ import { useState } from "react";
 import HtmlCources from "./HtmlCources";
 
 function Courses() {
-  const [lesson, setLesson] = useState(null);
+  const [lesson, setLesson] = useState("list");
 
   if (lesson === "html") {
-    return <HtmlCources goBack={() => setLesson(null)} />;
+    return <HtmlCources goBack={() => setLesson("list")} />;
   }
 
   return (
@@ -13,24 +13,26 @@ function Courses() {
       <h2>Course Content</h2>
 
       <div className="course-list">
-        <button className="lesson lesson-btn" onClick={() => setLesson("html")}>
-          <span className="check">✓</span>
+        <button
+          type="button"
+          className="lesson lesson-btn"
+          onClick={() => setLesson("html")}
+        >
+          <div className="check-box">✓</div>
 
-          <div>
+          <div className="lesson-info">
             <h3>1. What is HTML?</h3>
-            <p>▣ 4min</p>
+            <p>▣ 4 min</p>
           </div>
         </button>
 
-        <div className="lesson active">
+        <div className="lesson">
           <span className="check">✓</span>
 
           <div>
             <h3>2. HTML Heading Elements</h3>
-            <p>▣ 14min</p>
+            <p>▣ 14 min</p>
           </div>
-
-          <button className="resource-btn">Resources ⌄</button>
         </div>
 
         <div className="lesson">
@@ -38,7 +40,7 @@ function Courses() {
 
           <div>
             <h3>3. HTML Paragraph Elements</h3>
-            <p>▣ 9min</p>
+            <p>▣ 9 min</p>
           </div>
         </div>
 
@@ -47,7 +49,7 @@ function Courses() {
 
           <div>
             <h3>4. Self Closing Tags</h3>
-            <p>▣ 12min</p>
+            <p>▣ 12 min</p>
           </div>
         </div>
       </div>
