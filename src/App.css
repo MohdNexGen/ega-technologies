@@ -1,399 +1,197 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background: #163aa8;
-  color: white;
+body{
+  background:linear-gradient(135deg,#0f172a,#1e3a8a);
+  min-height:100vh;
 }
 
-.app {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #1537a0, #1e40af);
+/* NAVBAR */
+
+.navbar{
+  background:#0f172a;
+  padding:20px 60px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 28px 6%;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+.logo{
+  color:white;
+  font-size:32px;
+  font-weight:bold;
 }
 
-.logo {
-  font-size: 32px;
-  font-weight: bold;
+.nav-links{
+  display:flex;
+  gap:20px;
 }
 
-.hamburger {
-  display: none;
-  font-size: 34px;
-  background: transparent;
-  color: white;
-  border: 2px solid white;
-  border-radius: 8px;
-  padding: 4px 10px;
-  cursor: pointer;
+.nav-links button{
+  background:none;
+  border:none;
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+  font-weight:bold;
 }
 
-.nav-links {
-  display: flex;
-  gap: 25px;
+.nav-links button:hover{
+  color:#60a5fa;
 }
 
-.nav-links button {
-  background: transparent;
-  color: white;
-  border: none;
-  font-size: 19px;
-  font-weight: bold;
-  cursor: pointer;
+/* HOME */
+
+.hero{
+  max-width:1100px;
+  margin:50px auto;
+  background:white;
+  padding:70px;
+  border-radius:20px;
+  text-align:center;
+  box-shadow:0 15px 35px rgba(0,0,0,.2);
 }
 
-.nav-links button:hover {
-  color: #facc15;
+.hero h1{
+  font-size:56px;
+  color:#0f172a;
+  margin-bottom:20px;
 }
 
-.hero-section {
-  min-height: calc(100vh - 100px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 70px 6%;
-  text-align: center;
+.hero p{
+  font-size:22px;
+  color:#64748b;
+  margin-bottom:30px;
+  line-height:1.8;
 }
 
-.hero-content {
-  max-width: 1100px;
+.main-btn{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:16px 30px;
+  border-radius:12px;
+  font-size:18px;
+  cursor:pointer;
 }
 
-.badge {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.14);
-  color: #facc15;
-  padding: 10px 18px;
-  border-radius: 999px;
-  font-weight: bold;
-  margin-bottom: 24px;
+/* ABOUT + COURSES + CONTACT */
+
+.page-card{
+  max-width:1100px;
+  margin:50px auto;
+  background:white;
+  padding:60px;
+  border-radius:20px;
+  box-shadow:0 15px 35px rgba(0,0,0,.2);
 }
 
-.hero-content h1 {
-  font-size: 54px;
-  line-height: 1.2;
-  margin-bottom: 25px;
+.page-card h2{
+  font-size:48px;
+  color:#0f172a;
+  margin-bottom:20px;
 }
 
-.hero-content p {
-  font-size: 22px;
-  line-height: 1.5;
-  margin-bottom: 35px;
+.page-card p{
+  font-size:20px;
+  color:#64748b;
+  line-height:1.8;
+  margin-bottom:25px;
 }
 
-.stats {
-  display: flex;
-  justify-content: center;
-  gap: 25px;
-  margin: 35px 0;
-  flex-wrap: wrap;
+/* COURSES */
+
+.course-list{
+  margin-top:30px;
 }
 
-.stat-card {
-  background: rgba(255, 255, 255, 0.12);
-  padding: 22px;
-  border-radius: 18px;
-  min-width: 200px;
+.lesson{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding:20px;
+  border-bottom:1px solid #e2e8f0;
 }
 
-.stat-card h2 {
-  color: #facc15;
-  margin-bottom: 8px;
-  font-size: 34px;
+.check{
+  width:32px;
+  height:32px;
+  background:#7c3aed;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:6px;
 }
 
-.stat-card p {
-  font-size: 16px;
-  margin-bottom: 0;
+.resource-btn{
+  margin-left:auto;
+  border:2px solid #7c3aed;
+  background:white;
+  color:#7c3aed;
+  padding:10px 20px;
+  border-radius:10px;
 }
 
-.about-box,
-.class-info {
-  max-width: 950px;
-  margin: 40px auto;
-  background: rgba(255, 255, 255, 0.12);
-  padding: 30px;
-  border-radius: 18px;
+/* CONTACT */
+
+.contact-form{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  width:100%;
+  max-width:800px;
 }
 
-.about-box h2,
-.class-info h2 {
-  margin-bottom: 18px;
-  color: #facc15;
+.contact-form input,
+.contact-form textarea{
+  width:100%;
+  padding:18px;
+  font-size:20px;
+  border:2px solid #dbeafe;
+  border-radius:12px;
+  background:#f8fafc;
 }
 
-.about-box p {
-  margin-bottom: 15px;
-  line-height: 1.7;
+.contact-form textarea{
+  min-height:220px;
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+.contact-form button{
+  width:100%;
+  padding:18px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:12px;
+  font-size:20px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-.info-card {
-  background: rgba(255, 255, 255, 0.12);
-  padding: 24px;
-  border-radius: 16px;
-}
+@media(max-width:768px){
 
-.info-card h3 {
-  color: #facc15;
-  margin-bottom: 10px;
-}
-
-.info-card p {
-  font-size: 17px;
-  line-height: 1.6;
-  margin-bottom: 0;
-}
-
-.main-btn,
-.form button {
-  background: #facc15;
-  color: #111827;
-  border: none;
-  padding: 16px 34px;
-  border-radius: 12px;
-  font-size: 19px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.main-btn:hover,
-.form button:hover {
-  background: #fde047;
-}
-
-.page-box {
-  width: 90%;
-  max-width: 1050px;
-  margin: 55px auto;
-  background: rgba(255, 255, 255, 0.12);
-  padding: 40px;
-  border-radius: 20px;
-  text-align: center;
-}
-
-.page-box h2 {
-  font-size: 38px;
-  margin-bottom: 18px;
-}
-
-.section-intro {
-  max-width: 750px;
-  margin: 0 auto 30px;
-  font-size: 18px;
-  line-height: 1.6;
-}
-
-.course-grid,
-.contact-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
-}
-
-.course-card,
-.contact-card {
-  background: white;
-  color: #111827;
-  padding: 25px;
-  border-radius: 16px;
-  text-align: left;
-}
-
-.course-card h3,
-.contact-card h3 {
-  color: #1e40af;
-  margin-bottom: 10px;
-}
-
-.course-card p,
-.contact-card p {
-  line-height: 1.6;
-}
-
-.notice {
-  font-size: 18px;
-  margin-bottom: 25px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 17px;
-}
-
-.form input,
-.form select,
-.form textarea {
-  width: 100%;
-  padding: 16px;
-  font-size: 17px;
-  border-radius: 12px;
-  border: none;
-}
-
-.form textarea {
-  min-height: 120px;
-}
-
-.success {
-  margin-top: 22px;
-  font-size: 20px;
-  font-weight: bold;
-  color: #bbf7d0;
-}
-
-.processing {
-  margin-top: 22px;
-  font-size: 20px;
-  font-weight: bold;
-  color: #fde68a;
-}
-
-.loading-text {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.spinner {
-  width: 18px;
-  height: 18px;
-  border: 3px solid #111827;
-  border-top: 3px solid transparent;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-.form button:disabled {
-  opacity: 0.8;
-  cursor: not-allowed;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-footer {
-  padding: 28px 6%;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.footer-content {
-  text-align: center;
-}
-
-.footer-content h3 {
-  color: #facc15;
-  margin-bottom: 8px;
-}
-
-.footer-content p {
-  margin-bottom: 6px;
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
-  .navbar {
-    padding: 22px 5%;
+  .navbar{
+    flex-direction:column;
+    gap:15px;
+    padding:20px;
   }
 
-  .logo {
-    font-size: 25px;
+  .hero,
+  .page-card{
+    margin:20px;
+    padding:30px;
   }
 
-  .hamburger {
-    display: block;
+  .hero h1{
+    font-size:36px;
   }
 
-  .nav-links {
-    display: none;
-    width: 100%;
-    background: #0f172a;
-    margin-top: 18px;
-    padding: 18px;
-    border-radius: 0 0 16px 16px;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .nav-links.open {
-    display: flex;
-  }
-
-  .nav-links button {
-    width: 100%;
-    padding: 14px;
-    font-size: 20px;
-    text-align: center;
-  }
-
-  .hero-section {
-    min-height: auto;
-    padding: 65px 6%;
-  }
-
-  .hero-content h1 {
-    font-size: 34px;
-    line-height: 1.25;
-  }
-
-  .hero-content p {
-    font-size: 18px;
-  }
-
-  .stats {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .stat-card {
-    width: 100%;
-    max-width: 320px;
-  }
-
-  .about-box,
-  .class-info {
-    padding: 24px;
-  }
-
-  .info-grid,
-  .course-grid,
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .main-btn,
-  .form button {
-    width: 100%;
-  }
-
-  .page-box {
-    width: 92%;
-    padding: 28px;
-  }
-
-  footer {
-    text-align: center;
+  .page-card h2{
+    font-size:34px;
   }
 }
