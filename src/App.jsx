@@ -1,6 +1,9 @@
 import { useState } from "react";
 import emailjs from "@emailjs/browser";
 import "./App.css";
+import EnglishServices from "./EnglishServices.jsx";
+import ArabicServices from "./ArabicServices.jsx";
+import SomaliServices from "./SomaliServices.jsx";
 
 const SERVICE_ID = "nexgen_gmail";
 const ADMIN_TEMPLATE_ID = "template_zvfw3qd";
@@ -19,8 +22,18 @@ function App() {
   return (
     <>
       {page === "home" && (
-        <Home openCourses={openCourses} openContact={openContact} />
+        <Home
+          openCourses={openCourses}
+          openContact={openContact}
+          openEnglish={() => setPage("english")}
+          openArabic={() => setPage("arabic")}
+          openSomali={() => setPage("somali")}
+        />
       )}
+
+      {page === "english" && <LanguagePage goHome={goHome} content={<EnglishServices />} />}
+      {page === "arabic" && <LanguagePage goHome={goHome} content={<ArabicServices />} />}
+      {page === "somali" && <LanguagePage goHome={goHome} content={<SomaliServices />} />}
 
       {page === "courses" && (
         <Courses goHome={goHome} openHtmlCourse={openHtmlCourse} />
@@ -37,7 +50,7 @@ function App() {
   );
 }
 
-function Home({ openCourses, openContact }) {
+function Home({ openCourses, openContact, openEnglish, openArabic, openSomali }) {
   return (
     <main className="page">
       <nav className="navbar">
@@ -55,10 +68,28 @@ function Home({ openCourses, openContact }) {
         <h2>Welcome to EGA Technologies</h2>
         <p>Learn web development step by step with real projects.</p>
 
+        <div className="language-buttons">
+          <button onClick={openEnglish}>English Services</button>
+          <button onClick={openArabic}>الخدمات العربية</button>
+          <button onClick={openSomali}>Adeegyada Somali</button>
+        </div>
+
         <button className="primary-btn" onClick={openCourses}>
           Access Courses
         </button>
       </section>
+    </main>
+  );
+}
+
+function LanguagePage({ goHome, content }) {
+  return (
+    <main className="page">
+      <button className="back-btn" onClick={goHome}>
+        ← Back to Home
+      </button>
+
+      {content}
     </main>
   );
 }
@@ -242,19 +273,8 @@ function Contact({ goHome }) {
     setMessageStatus("Sending message...");
 
     try {
-      await emailjs.send(
-        SERVICE_ID,
-        ADMIN_TEMPLATE_ID,
-        formData,
-        PUBLIC_KEY
-      );
-
-      await emailjs.send(
-        SERVICE_ID,
-        AUTO_REPLY_TEMPLATE_ID,
-        formData,
-        PUBLIC_KEY
-      );
+      await emailjs.send(SERVICE_ID, ADMIN_TEMPLATE_ID, formData, PUBLIC_KEY);
+      await emailjs.send(SERVICE_ID, AUTO_REPLY_TEMPLATE_ID, formData, PUBLIC_KEY);
 
       setMessageStatus("Message sent successfully. Confirmation email sent.");
 
@@ -285,7 +305,6 @@ function Contact({ goHome }) {
 
       <section className="course-page">
         <h1>Contact EGA Technologies</h1>
-
         <p>Students can contact EGA to register or ask about available courses.</p>
 
         {messageStatus && <div className="popup-message">{messageStatus}</div>}
