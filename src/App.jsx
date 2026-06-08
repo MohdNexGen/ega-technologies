@@ -1,5 +1,11 @@
 import { useState } from "react";
+import emailjs from "@emailjs/browser";
 import "./App.css";
+
+const SERVICE_ID = "nexgen_gmail";
+const ADMIN_TEMPLATE_ID = "template_zvfw3qd";
+const AUTO_REPLY_TEMPLATE_ID = "template_rbz2rme";
+const PUBLIC_KEY = "H5xDt1e48EHqf_U4U";
 
 function App() {
   const [page, setPage] = useState("home");
@@ -212,19 +218,63 @@ function HtmlTest({ goBack }) {
 
 function Contact({ goHome }) {
   const [messageStatus, setMessageStatus] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
-  const handleSendMessage = (event) => {
+  const [formData, setFormData] = useState({
+    student_name: "",
+    student_email: "",
+    student_phone: "",
+    student_course: "",
+    student_message: "",
+  });
+
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleSendMessage = async (event) => {
     event.preventDefault();
 
+    setIsSending(true);
     setMessageStatus("Sending message...");
 
-    setTimeout(() => {
+    try {
+      await emailjs.send(
+        SERVICE_ID,
+        ADMIN_TEMPLATE_ID,
+        formData,
+        PUBLIC_KEY
+      );
+
+      await emailjs.send(
+        SERVICE_ID,
+        AUTO_REPLY_TEMPLATE_ID,
+        formData,
+        PUBLIC_KEY
+      );
+
       setMessageStatus("Message sent successfully. Confirmation email sent.");
+
+      setFormData({
+        student_name: "",
+        student_email: "",
+        student_phone: "",
+        student_course: "",
+        student_message: "",
+      });
 
       setTimeout(() => {
         setMessageStatus("");
-      }, 3500);
-    }, 1200);
+      }, 4000);
+    } catch (error) {
+      console.error(error);
+      setMessageStatus("Message failed. Please check EmailJS settings.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -241,18 +291,64 @@ function Contact({ goHome }) {
         {messageStatus && <div className="popup-message">{messageStatus}</div>}
 
         <form onSubmit={handleSendMessage}>
-          <input type="text" placeholder="Your Name" className="form-input" />
+          <input
+            type="text"
+            name="student_name"
+            placeholder="Your Name"
+            className="form-input"
+            value={formData.student_name}
+            onChange={handleChange}
+            required
+          />
 
-          <input type="email" placeholder="Your Email" className="form-input" />
+          <input
+            type="email"
+            name="student_email"
+            placeholder="Your Email"
+            className="form-input"
+            value={formData.student_email}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            type="tel"
+            name="student_phone"
+            placeholder="Your Phone"
+            className="form-input"
+            value={formData.student_phone}
+            onChange={handleChange}
+            required
+          />
+
+          <select
+            name="student_course"
+            className="form-input"
+            value={formData.student_course}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Course</option>
+            <option value="HTML">HTML</option>
+            <option value="CSS">CSS</option>
+            <option value="JavaScript ES6">JavaScript ES6</option>
+            <option value="React">React</option>
+            <option value="Node.js">Node.js</option>
+            <option value="Express">Express</option>
+          </select>
 
           <textarea
+            name="student_message"
             placeholder="Your Message"
             rows="6"
             className="form-input"
+            value={formData.student_message}
+            onChange={handleChange}
+            required
           ></textarea>
 
-          <button className="primary-btn" type="submit">
-            Send Message
+          <button className="primary-btn" type="submit" disabled={isSending}>
+            {isSending ? "Sending..." : "Send Message"}
           </button>
         </form>
       </section>
