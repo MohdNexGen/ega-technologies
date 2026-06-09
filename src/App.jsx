@@ -72,37 +72,110 @@ function App() {
     }
   }
 
-  if (page === "home") {
+  function Navbar() {
     return (
-      <div className="app">
-        <div className="contact-section">
-          <h1>EGA Technologies</h1>
-          <p>Learn web development step by step with real projects.</p>
+      <nav className="navbar">
+        <h2>EGA Technologies</h2>
 
-          <button onClick={() => setPage("contact")}>
-            Contact / Register
-          </button>
+        <div className="nav-links">
+          <button onClick={() => setPage("home")}>Home</button>
+          <button onClick={() => setPage("about")}>About</button>
+          <button onClick={() => setPage("courses")}>Courses</button>
+          <button onClick={() => setPage("contact")}>Contact</button>
         </div>
-      </div>
+      </nav>
     );
   }
 
-  return (
-    <div className="app">
-      <div className="contact-section">
-        <button
-          type="button"
-          className="back-btn"
-          onClick={() => setPage("home")}
-        >
+  function Home() {
+    return (
+      <main className="page">
+        <section className="hero">
+          <h1>Welcome to EGA Technologies</h1>
+          <p>
+            Learn web development step by step with real projects, practical
+            lessons, and professional guidance.
+          </p>
+
+          <button className="primary-btn" onClick={() => setPage("courses")}>
+            View Courses
+          </button>
+        </section>
+
+        <section className="cards">
+          <div className="card">
+            <h3>Frontend</h3>
+            <p>HTML, CSS, JavaScript ES6, and React.</p>
+          </div>
+
+          <div className="card">
+            <h3>Backend</h3>
+            <p>Node.js, Express, APIs, and database basics.</p>
+          </div>
+
+          <div className="card">
+            <h3>Real Projects</h3>
+            <p>Build real websites and prepare for freelance work.</p>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  function About() {
+    return (
+      <main className="page content-card">
+        <button className="back-btn" onClick={() => setPage("home")}>
+          ← Back
+        </button>
+
+        <h1>About EGA</h1>
+        <p>
+          EGA Technologies helps students learn modern web development from
+          beginner level to real project building.
+        </p>
+        <p>
+          Students learn by practicing HTML, CSS, JavaScript, React, Node.js,
+          and Express.
+        </p>
+      </main>
+    );
+  }
+
+  function Courses() {
+    return (
+      <main className="page content-card">
+        <button className="back-btn" onClick={() => setPage("home")}>
+          ← Back
+        </button>
+
+        <h1>Available Courses</h1>
+
+        <div className="course-list">
+          <div>HTML Fundamentals</div>
+          <div>CSS Professional Styling</div>
+          <div>JavaScript ES6</div>
+          <div>React Development</div>
+          <div>Node.js and Express</div>
+          <div>Full Web Development</div>
+        </div>
+
+        <button className="primary-btn" onClick={() => setPage("contact")}>
+          Register Now
+        </button>
+      </main>
+    );
+  }
+
+  function Contact() {
+    return (
+      <main className="page contact-card">
+        <button className="back-btn" onClick={() => setPage("home")}>
           ← Back
         </button>
 
         <h1>Contact EGA</h1>
-
-        <p>
-          Students can contact EGA to register or ask about available courses.
-        </p>
+        <p>Students can contact EGA to register or ask about available courses.</p>
 
         <form className="contact-form" onSubmit={handleSubmit}>
           <input
@@ -151,8 +224,19 @@ function App() {
 
           {status && <div className="success-message">{status}</div>}
         </form>
-      </div>
-    </div>
+      </main>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+
+      {page === "home" && <Home />}
+      {page === "about" && <About />}
+      {page === "courses" && <Courses />}
+      {page === "contact" && <Contact />}
+    </>
   );
 }
 

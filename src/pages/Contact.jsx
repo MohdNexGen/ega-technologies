@@ -1,21 +1,22 @@
 import { useState } from "react";
 import emailjs from "@emailjs/browser";
 
+const SERVICE_ID = "nexgen_gmail";
+const SCHOOL_TEMPLATE_ID = "template_zvfw3qd";
+const STUDENT_TEMPLATE_ID = "template_rbz2rme";
+const PUBLIC_KEY = "H5xDt1e48EHqf_U4U";
+
 function Contact({ goBack }) {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    course: "",
+    phone: "",
+    course: "Full Web Development",
     message: "",
   });
 
   const [status, setStatus] = useState("");
   const [sending, setSending] = useState(false);
-
-  const SERVICE_ID = "YOUR_SERVICE_ID";
-  const SCHOOL_TEMPLATE_ID = "YOUR_SCHOOL_TEMPLATE_ID";
-  const STUDENT_TEMPLATE_ID = "YOUR_STUDENT_TEMPLATE_ID";
-  const PUBLIC_KEY = "YOUR_PUBLIC_KEY";
 
   const handleChange = (e) => {
     setForm({
@@ -36,52 +37,37 @@ function Contact({ goBack }) {
     e.preventDefault();
     setStatus("");
 
-    if (!form.name || !form.email || !form.course || !form.message) {
+    if (!form.name || !form.email || !form.phone || !form.course || !form.message) {
       setStatus("Please fill all fields before sending.");
       return;
     }
 
-    if (
-      SERVICE_ID === "YOUR_SERVICE_ID" ||
-      SCHOOL_TEMPLATE_ID === "YOUR_SCHOOL_TEMPLATE_ID" ||
-      STUDENT_TEMPLATE_ID === "YOUR_STUDENT_TEMPLATE_ID" ||
-      PUBLIC_KEY === "YOUR_PUBLIC_KEY"
-    ) {
-      setStatus("EmailJS is not connected yet. Add your real EmailJS IDs.");
-      return;
-    }
-
     setSending(true);
+    setStatus("Sending...");
 
     const templateParams = {
       student_name: form.name,
       student_email: form.email,
+      student_phone: form.phone,
+      student_course: form.course,
       selected_course: form.course,
       student_message: form.message,
       to_email: form.email,
     };
 
     try {
-      await emailjs.send(
-        SERVICE_ID,
-        SCHOOL_TEMPLATE_ID,
-        templateParams,
-        PUBLIC_KEY
-      );
+      await Promise.all([
+        emailjs.send(SERVICE_ID, SCHOOL_TEMPLATE_ID, templateParams, PUBLIC_KEY),
+        emailjs.send(SERVICE_ID, STUDENT_TEMPLATE_ID, templateParams, PUBLIC_KEY),
+      ]);
 
-      await emailjs.send(
-        SERVICE_ID,
-        STUDENT_TEMPLATE_ID,
-        templateParams,
-        PUBLIC_KEY
-      );
-
-      setStatus("Message sent successfully. Confirmation email sent.");
+      setStatus("✅ Message sent successfully. Confirmation email sent.");
 
       setForm({
         name: "",
         email: "",
-        course: "",
+        phone: "",
+        course: "Full Web Development",
         message: "",
       });
 
@@ -89,22 +75,22 @@ function Contact({ goBack }) {
         setStatus("");
       }, 5000);
     } catch (error) {
-      console.log(error);
-      setStatus("Failed to send message. Please check EmailJS settings.");
+      console.error("EmailJS error:", error);
+      setStatus("❌ Failed to send message. Please check EmailJS settings.");
     } finally {
       setSending(false);
     }
   };
 
   return (
-    <section className="page-card">
+    <section className="page-card contact-page">
       <button type="button" className="back-btn" onClick={handleBack}>
         ← Back Home
       </button>
 
       <h2>Contact EGA</h2>
 
-      <div className="course-box">
+      <div className="course-box contact-box">
         <h3>Register or Contact Us</h3>
 
         <p>
@@ -131,19 +117,27 @@ function Contact({ goBack }) {
             required
           />
 
+          <input
+            type="tel"
+            name="phone"
+            placeholder="Your Phone Number"
+            value={form.phone}
+            onChange={handleChange}
+            required
+          />
+
           <select
             name="course"
             value={form.course}
             onChange={handleChange}
             required
           >
-            <option value="">Select Course</option>
+            <option value="Full Web Development">Full Web Development</option>
             <option value="HTML">HTML</option>
             <option value="CSS">CSS</option>
             <option value="JavaScript ES6">JavaScript ES6</option>
             <option value="React">React</option>
             <option value="Node.js and Express">Node.js and Express</option>
-            <option value="Full Web Development">Full Web Development</option>
           </select>
 
           <textarea
