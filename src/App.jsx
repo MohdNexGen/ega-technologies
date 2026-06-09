@@ -7,9 +7,78 @@ const ADMIN_TEMPLATE_ID = "template_zvfw3qd";
 const AUTO_REPLY_TEMPLATE_ID = "template_rbz2rme";
 const PUBLIC_KEY = "H5xDt1e48EHqf_U4U";
 
-function App() {
-  const [page, setPage] = useState("home");
+function Navbar({ setPage }) {
+  return (
+    <nav className="navbar">
+      <h2>EGA Technologies</h2>
+      <div className="nav-links">
+        <button onClick={() => setPage("home")}>Home</button>
+        <button onClick={() => setPage("about")}>About</button>
+        <button onClick={() => setPage("courses")}>Courses</button>
+        <button onClick={() => setPage("contact")}>Contact</button>
+      </div>
+    </nav>
+  );
+}
 
+function Home({ setPage }) {
+  return (
+    <main className="page">
+      <section className="hero">
+        <h1>Welcome to EGA Technologies</h1>
+        <p>
+          Learn web development step by step with real projects, practical
+          lessons, and professional guidance.
+        </p>
+        <button className="primary-btn" onClick={() => setPage("courses")}>
+          View Courses
+        </button>
+      </section>
+    </main>
+  );
+}
+
+function About({ setPage }) {
+  return (
+    <main className="page content-card">
+      <button className="back-btn" onClick={() => setPage("home")}>
+        ← Back
+      </button>
+      <h1>About EGA</h1>
+      <p>
+        EGA Technologies helps students learn modern web development from
+        beginner level to real project building.
+      </p>
+    </main>
+  );
+}
+
+function Courses({ setPage }) {
+  return (
+    <main className="page content-card">
+      <button className="back-btn" onClick={() => setPage("home")}>
+        ← Back
+      </button>
+
+      <h1>Available Courses</h1>
+
+      <div className="course-list">
+        <div>HTML Fundamentals</div>
+        <div>CSS Professional Styling</div>
+        <div>JavaScript ES6</div>
+        <div>React Development</div>
+        <div>Node.js and Express</div>
+        <div>Full Web Development</div>
+      </div>
+
+      <button className="primary-btn" onClick={() => setPage("contact")}>
+        Register Now
+      </button>
+    </main>
+  );
+}
+
+function Contact({ setPage }) {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -22,7 +91,11 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   }
 
   async function handleSubmit(e) {
@@ -72,170 +145,51 @@ function App() {
     }
   }
 
-  function Navbar() {
-    return (
-      <nav className="navbar">
-        <h2>EGA Technologies</h2>
+  return (
+    <main className="page contact-card">
+      <button className="back-btn" onClick={() => setPage("home")}>
+        ← Back
+      </button>
 
-        <div className="nav-links">
-          <button onClick={() => setPage("home")}>Home</button>
-          <button onClick={() => setPage("about")}>About</button>
-          <button onClick={() => setPage("courses")}>Courses</button>
-          <button onClick={() => setPage("contact")}>Contact</button>
-        </div>
-      </nav>
-    );
-  }
+      <h1>Contact EGA</h1>
+      <p>Students can contact EGA to register or ask about available courses.</p>
 
-  function Home() {
-    return (
-      <main className="page">
-        <section className="hero">
-          <h1>Welcome to EGA Technologies</h1>
-          <p>
-            Learn web development step by step with real projects, practical
-            lessons, and professional guidance.
-          </p>
+      <form className="contact-form" onSubmit={handleSubmit}>
+        <input type="text" name="name" placeholder="Your Name" value={form.name} onChange={handleChange} />
+        <input type="email" name="email" placeholder="Your Email" value={form.email} onChange={handleChange} />
+        <input type="tel" name="phone" placeholder="Your Phone" value={form.phone} onChange={handleChange} />
 
-          <button className="primary-btn" onClick={() => setPage("courses")}>
-            View Courses
-          </button>
-        </section>
+        <select name="course" value={form.course} onChange={handleChange}>
+          <option value="Full Web Development">Full Web Development</option>
+          <option value="HTML">HTML</option>
+          <option value="CSS">CSS</option>
+          <option value="JavaScript ES6">JavaScript ES6</option>
+          <option value="React">React</option>
+          <option value="Node.js">Node.js</option>
+        </select>
 
-        <section className="cards">
-          <div className="card">
-            <h3>Frontend</h3>
-            <p>HTML, CSS, JavaScript ES6, and React.</p>
-          </div>
+        <textarea name="message" placeholder="Your Message" value={form.message} onChange={handleChange} />
 
-          <div className="card">
-            <h3>Backend</h3>
-            <p>Node.js, Express, APIs, and database basics.</p>
-          </div>
-
-          <div className="card">
-            <h3>Real Projects</h3>
-            <p>Build real websites and prepare for freelance work.</p>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
-  function About() {
-    return (
-      <main className="page content-card">
-        <button className="back-btn" onClick={() => setPage("home")}>
-          ← Back
+        <button type="submit" disabled={loading}>
+          {loading ? "Sending..." : "Send Message"}
         </button>
 
-        <h1>About EGA</h1>
-        <p>
-          EGA Technologies helps students learn modern web development from
-          beginner level to real project building.
-        </p>
-        <p>
-          Students learn by practicing HTML, CSS, JavaScript, React, Node.js,
-          and Express.
-        </p>
-      </main>
-    );
-  }
+        {status && <div className="success-message">{status}</div>}
+      </form>
+    </main>
+  );
+}
 
-  function Courses() {
-    return (
-      <main className="page content-card">
-        <button className="back-btn" onClick={() => setPage("home")}>
-          ← Back
-        </button>
-
-        <h1>Available Courses</h1>
-
-        <div className="course-list">
-          <div>HTML Fundamentals</div>
-          <div>CSS Professional Styling</div>
-          <div>JavaScript ES6</div>
-          <div>React Development</div>
-          <div>Node.js and Express</div>
-          <div>Full Web Development</div>
-        </div>
-
-        <button className="primary-btn" onClick={() => setPage("contact")}>
-          Register Now
-        </button>
-      </main>
-    );
-  }
-
-  function Contact() {
-    return (
-      <main className="page contact-card">
-        <button className="back-btn" onClick={() => setPage("home")}>
-          ← Back
-        </button>
-
-        <h1>Contact EGA</h1>
-        <p>Students can contact EGA to register or ask about available courses.</p>
-
-        <form className="contact-form" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Your Name"
-            value={form.name}
-            onChange={handleChange}
-          />
-
-          <input
-            type="email"
-            name="email"
-            placeholder="Your Email"
-            value={form.email}
-            onChange={handleChange}
-          />
-
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Your Phone"
-            value={form.phone}
-            onChange={handleChange}
-          />
-
-          <select name="course" value={form.course} onChange={handleChange}>
-            <option value="Full Web Development">Full Web Development</option>
-            <option value="HTML">HTML</option>
-            <option value="CSS">CSS</option>
-            <option value="JavaScript ES6">JavaScript ES6</option>
-            <option value="React">React</option>
-            <option value="Node.js">Node.js</option>
-          </select>
-
-          <textarea
-            name="message"
-            placeholder="Your Message"
-            value={form.message}
-            onChange={handleChange}
-          />
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Sending..." : "Send Message"}
-          </button>
-
-          {status && <div className="success-message">{status}</div>}
-        </form>
-      </main>
-    );
-  }
+function App() {
+  const [page, setPage] = useState("home");
 
   return (
     <>
-      <Navbar />
-
-      {page === "home" && <Home />}
-      {page === "about" && <About />}
-      {page === "courses" && <Courses />}
-      {page === "contact" && <Contact />}
+      <Navbar setPage={setPage} />
+      {page === "home" && <Home setPage={setPage} />}
+      {page === "about" && <About setPage={setPage} />}
+      {page === "courses" && <Courses setPage={setPage} />}
+      {page === "contact" && <Contact setPage={setPage} />}
     </>
   );
 }
