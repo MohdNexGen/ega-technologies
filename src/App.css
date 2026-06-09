@@ -225,3 +225,46 @@ body {
     padding: 28px;
   }
 }
+.bismillah {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ffd700;
+  white-space: nowrap;
+  animation: bismillahGlow 3s ease-in-out infinite;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+}
+
+@keyframes bismillahGlow {
+  0% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.08);
+  }
+
+  100% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.navbar {
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .bismillah {
+    position: static;
+    transform: none;
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+}
