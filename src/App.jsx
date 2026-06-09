@@ -1,278 +1,157 @@
 import { useState } from "react";
+import emailjs from "@emailjs/browser";
 import "./App.css";
 
-const courses = {
-  english: {
-    title: "🇺🇸 Web Development Program",
-    backText: "← Back to Languages",
-    testText: "Start Test",
-    quizTitle: "English Quiz",
-    topics: [
-      "HTML Fundamentals",
-      "CSS Professional Styling",
-      "JavaScript ES6",
-      "React Development",
-      "Node.js & Express",
-      "Real Projects",
-    ],
-    questions: [
-      {
-        q: "1. What does HTML stand for?",
-        correct: "HyperText Markup Language",
-        a: ["HyperText Markup Language", "Home Tool Markup Language", "Hyper Transfer Main Language"],
-      },
-      {
-        q: "2. Which language styles a website?",
-        correct: "CSS",
-        a: ["HTML", "CSS", "Node.js"],
-      },
-      {
-        q: "3. Which language adds interactivity?",
-        correct: "JavaScript",
-        a: ["JavaScript", "HTML", "CSS"],
-      },
-    ],
-  },
-
-  arabic: {
-    title: "🇸🇦 برنامج تطوير الويب",
-    backText: "← الرجوع إلى اللغات",
-    testText: "ابدأ الاختبار",
-    quizTitle: "اختبار قصير",
-    topics: [
-      "أساسيات HTML",
-      "تنسيق CSS الاحترافي",
-      "JavaScript ES6",
-      "تطوير React",
-      "Node.js و Express",
-      "مشاريع حقيقية",
-    ],
-    questions: [
-      {
-        q: "1. ماذا تعني HTML؟",
-        correct: "لغة ترميز النص التشعبي",
-        a: ["لغة ترميز النص التشعبي", "لغة أدوات المنزل", "لغة النقل الرئيسية"],
-      },
-      {
-        q: "2. أي لغة تستخدم لتنسيق الموقع؟",
-        correct: "CSS",
-        a: ["HTML", "CSS", "Node.js"],
-      },
-      {
-        q: "3. أي لغة تضيف التفاعل للموقع؟",
-        correct: "JavaScript",
-        a: ["JavaScript", "HTML", "CSS"],
-      },
-    ],
-  },
-
-  somali: {
-    title: "🇸🇴 Barnaamijka Horumarinta Webka",
-    backText: "← Ku noqo Luuqadaha",
-    testText: "Bilow Imtixaanka",
-    quizTitle: "Imtixaan Kooban",
-    topics: [
-      "Aasaaska HTML",
-      "Qaabaynta Xirfadaysan ee CSS",
-      "JavaScript ES6",
-      "Horumarinta React",
-      "Node.js iyo Express",
-      "Mashruucyo Dhab Ah",
-    ],
-    questions: [
-      {
-        q: "1. Maxay HTML u taagan tahay?",
-        correct: "HyperText Markup Language",
-        a: ["HyperText Markup Language", "Home Tool Markup Language", "Hyper Transfer Main Language"],
-      },
-      {
-        q: "2. Luqaddee loo isticmaalaa qurxinta website-ka?",
-        correct: "CSS",
-        a: ["HTML", "CSS", "Node.js"],
-      },
-      {
-        q: "3. Luqaddee ka dhigta website-ka mid firfircoon?",
-        correct: "JavaScript",
-        a: ["JavaScript", "HTML", "CSS"],
-      },
-    ],
-  },
-};
+const SERVICE_ID = "nexgen_gmail";
+const ADMIN_TEMPLATE_ID = "template_zvfw3qd";
+const AUTO_REPLY_TEMPLATE_ID = "template_rbz2rme";
+const PUBLIC_KEY = "H5xDt1e48EHqf_U4U";
 
 function App() {
   const [page, setPage] = useState("home");
-  const [courseLang, setCourseLang] = useState("english");
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [answers, setAnswers] = useState({});
 
-  const openCourse = (lang) => {
-    setCourseLang(lang);
-    setShowQuiz(false);
-    setAnswers({});
-    setPage("courseDetail");
-  };
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    course: "Full Web Development",
+    message: "",
+  });
 
-  const currentCourse = courses[courseLang];
+  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const chooseAnswer = (questionIndex, answer) => {
-    setAnswers({
-      ...answers,
-      [questionIndex]: answer,
-    });
-  };
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
 
-  const score = currentCourse.questions.filter(
-    (item, index) => answers[index] === item.correct
-  ).length;
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!form.name || !form.email || !form.phone || !form.message) {
+      setStatus("Please fill all required fields.");
+      setTimeout(() => setStatus(""), 4000);
+      return;
+    }
+
+    setLoading(true);
+    setStatus("Sending...");
+
+    const templateParams = {
+      student_name: form.name,
+      student_email: form.email,
+      student_phone: form.phone,
+      student_course: form.course,
+      student_message: form.message,
+      to_email: form.email,
+    };
+
+    try {
+      await Promise.all([
+        emailjs.send(SERVICE_ID, ADMIN_TEMPLATE_ID, templateParams, PUBLIC_KEY),
+        emailjs.send(SERVICE_ID, AUTO_REPLY_TEMPLATE_ID, templateParams, PUBLIC_KEY),
+      ]);
+
+      setStatus("✅ Message sent successfully. Confirmation email sent.");
+
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        course: "Full Web Development",
+        message: "",
+      });
+
+      setTimeout(() => setStatus(""), 5000);
+    } catch (error) {
+      console.error("EmailJS error:", error);
+      setStatus("❌ Failed to send message. Please try again.");
+      setTimeout(() => setStatus(""), 5000);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (page === "home") {
+    return (
+      <div className="app">
+        <div className="contact-section">
+          <h1>EGA Technologies</h1>
+          <p>Learn web development step by step with real projects.</p>
+
+          <button onClick={() => setPage("contact")}>
+            Contact / Register
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
-      <header className="navbar">
-        <h1>EGA Technologies</h1>
+      <div className="contact-section">
+        <button
+          type="button"
+          className="back-btn"
+          onClick={() => setPage("home")}
+        >
+          ← Back
+        </button>
 
-        <div className="nav-links">
-          <button onClick={() => setPage("home")}>Home</button>
-          <button onClick={() => setPage("courses")}>Courses</button>
-          <button onClick={() => setPage("about")}>About</button>
-          <button onClick={() => setPage("contact")}>Contact</button>
-        </div>
-      </header>
+        <h1>Contact EGA</h1>
 
-      {page === "home" && (
-        <section className="hero">
-          <h2>Welcome to EGA Technologies</h2>
+        <p>
+          Students can contact EGA to register or ask about available courses.
+        </p>
 
-          <p>
-            Learn web development step by step with real projects.
-            <br />
-            تعلّم تطوير المواقع خطوة بخطوة من خلال مشاريع حقيقية.
-            <br />
-            Baro web development talaabo talaabo adigoo samaynaya mashruucyo dhab ah.
-          </p>
+        <form className="contact-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="name"
+            placeholder="Your Name"
+            value={form.name}
+            onChange={handleChange}
+          />
 
-          <button className="access-btn" onClick={() => setPage("courses")}>
-            <span>🇺🇸 Access Courses</span>
-            <span>🇸🇦 الدخول إلى الدورات</span>
-            <span>🇸🇴 Gal Koorsooyinka</span>
-          </button>
-        </section>
-      )}
+          <input
+            type="email"
+            name="email"
+            placeholder="Your Email"
+            value={form.email}
+            onChange={handleChange}
+          />
 
-      {page === "courses" && (
-        <section className="page-card">
-          <button className="back-btn" onClick={() => setPage("home")}>
-            ← Back Home
-          </button>
+          <input
+            type="tel"
+            name="phone"
+            placeholder="Your Phone"
+            value={form.phone}
+            onChange={handleChange}
+          />
 
-          <h2>Select Language</h2>
+          <select name="course" value={form.course} onChange={handleChange}>
+            <option value="Full Web Development">Full Web Development</option>
+            <option value="HTML">HTML</option>
+            <option value="CSS">CSS</option>
+            <option value="JavaScript ES6">JavaScript ES6</option>
+            <option value="React">React</option>
+            <option value="Node.js">Node.js</option>
+          </select>
 
-          <div className="language-grid">
-            <button className="language-btn" onClick={() => openCourse("english")}>
-              🇺🇸 English Course
-            </button>
+          <textarea
+            name="message"
+            placeholder="Your Message"
+            value={form.message}
+            onChange={handleChange}
+          />
 
-            <button className="language-btn" onClick={() => openCourse("arabic")}>
-              🇸🇦 Arabic Course
-            </button>
-
-            <button className="language-btn" onClick={() => openCourse("somali")}>
-              🇸🇴 Somali Course
-            </button>
-          </div>
-        </section>
-      )}
-
-      {page === "courseDetail" && (
-        <section className="page-card">
-          <button
-            className="back-btn"
-            onClick={() => {
-              setShowQuiz(false);
-              setAnswers({});
-              setPage("courses");
-            }}
-          >
-            {currentCourse.backText}
+          <button type="submit" disabled={loading}>
+            {loading ? "Sending..." : "Send Message"}
           </button>
 
-          <div className={courseLang === "arabic" ? "course-box arabic-text" : "course-box"}>
-            <h3>{currentCourse.title}</h3>
-
-            <ul>
-              {currentCourse.topics.map((topic, index) => (
-                <li key={index}>{topic}</li>
-              ))}
-            </ul>
-
-            <button
-              className="test-btn"
-              onClick={() => {
-                setShowQuiz(true);
-                setAnswers({});
-              }}
-            >
-              {currentCourse.testText}
-            </button>
-
-            {showQuiz && (
-              <div className="quiz-box">
-                <h3>{currentCourse.quizTitle}</h3>
-
-                <div className="score-box">
-                  Score: {score} / {currentCourse.questions.length}
-                </div>
-
-                {currentCourse.questions.map((item, index) => (
-                  <div className="question-card" key={index}>
-                    <p>{item.q}</p>
-
-                    {item.a.map((answer, answerIndex) => (
-                      <button
-                        key={answerIndex}
-                        onClick={() => chooseAnswer(index, answer)}
-                        className={
-                          answers[index] === answer
-                            ? answer === item.correct
-                              ? "answer-btn correct"
-                              : "answer-btn wrong"
-                            : "answer-btn"
-                        }
-                      >
-                        {answer}
-                      </button>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {page === "about" && (
-        <section className="page-card">
-          <button className="back-btn" onClick={() => setPage("home")}>
-            ← Back Home
-          </button>
-
-          <h2>About EGA</h2>
-          <p>
-            EGA Technologies provides professional web development training
-            through practical lessons and real projects.
-          </p>
-        </section>
-      )}
-
-      {page === "contact" && (
-        <section className="page-card">
-          <button className="back-btn" onClick={() => setPage("home")}>
-            ← Back Home
-          </button>
-
-          <h2>Contact EGA</h2>
-          <p>Contact EGA Technologies for registration and course information.</p>
-        </section>
-      )}
+          {status && <div className="success-message">{status}</div>}
+        </form>
+      </div>
     </div>
   );
 }
