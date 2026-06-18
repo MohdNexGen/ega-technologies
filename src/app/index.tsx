@@ -1,98 +1,75 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { Link } from "expo-router";
+import { ScrollView, Text, View, StyleSheet, Pressable } from "react-native";
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <ScrollView style={styles.page}>
+      <View style={styles.hero}>
+        <Text style={styles.logo}>🏫</Text>
+        <Text style={styles.title}>Najash College</Text>
+        <Text style={styles.subtitle}>
+          Learn Web Development in English, Arabic, and Somali.
+        </Text>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        <Link href="/register" asChild>
+          <Pressable style={styles.heroButton}>
+            <Text style={styles.heroButtonText}>Start Learning</Text>
+          </Pressable>
+        </Link>
+      </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+      <Link href="/explore" asChild>
+        <Pressable style={styles.card}>
+          <Text style={styles.cardTitle}>📚 Courses</Text>
+          <Text style={styles.cardText}>HTML, CSS, JavaScript, React</Text>
+        </Pressable>
+      </Link>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <Link href="/portal" asChild>
+        <Pressable style={styles.card}>
+          <Text style={styles.cardTitle}>🎓 Student Portal</Text>
+          <Text style={styles.cardText}>Login, quiz, progress, certificate</Text>
+        </Pressable>
+      </Link>
+
+      <Link href="/payments" asChild>
+        <Pressable style={styles.card}>
+          <Text style={styles.cardTitle}>💳 Payments</Text>
+          <Text style={styles.cardText}>Course fee: 3000 ETB</Text>
+        </Pressable>
+      </Link>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  page: { flex: 1, backgroundColor: "#eef3ff" },
+  hero: {
+    backgroundColor: "#1e3a8a",
+    paddingTop: 80,
+    paddingBottom: 45,
+    paddingHorizontal: 25,
+    alignItems: "center",
+    borderBottomLeftRadius: 35,
+    borderBottomRightRadius: 35,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+  logo: { fontSize: 50, marginBottom: 15 },
+  title: { fontSize: 36, color: "white", fontWeight: "bold", textAlign: "center" },
+  subtitle: { fontSize: 18, color: "white", marginTop: 12, textAlign: "center" },
+  heroButton: {
+    backgroundColor: "#facc15",
+    marginTop: 30,
+    paddingVertical: 16,
+    paddingHorizontal: 45,
+    borderRadius: 30,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  heroButtonText: { color: "#1e3a8a", fontSize: 20, fontWeight: "bold" },
+  card: {
+    backgroundColor: "white",
+    margin: 14,
+    padding: 22,
+    borderRadius: 18,
   },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  cardTitle: { fontSize: 24, fontWeight: "bold", color: "#1e3a8a" },
+  cardText: { fontSize: 17, color: "#334155", marginTop: 10 },
 });
