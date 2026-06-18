@@ -1,11 +1,23 @@
-import { ScrollView, Text, View, StyleSheet, TextInput, Pressable } from "react-native";
+import { router } from "expo-router";
+import {
+  ScrollView,
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  Pressable,
+} from "react-native";
 
 export default function PortalScreen() {
   return (
     <ScrollView style={styles.page}>
       <View style={styles.header}>
+        <Pressable style={styles.backButton} onPress={() => router.push("/")}>
+          <Text style={styles.backButtonText}>← Home</Text>
+        </Pressable>
+
         <Text style={styles.logo}>🎓</Text>
-        <Text style={styles.title}>Student Portal</Text>
+        <Text style={styles.title}>Learner Portal</Text>
         <Text style={styles.subtitle}>
           Login to view progress and certificate
         </Text>
@@ -13,12 +25,14 @@ export default function PortalScreen() {
 
       <View style={styles.card}>
         <Text style={styles.label}>Student ID</Text>
+
         <TextInput
           style={styles.input}
-          placeholder="Example: DFS-2026-0001"
+          placeholder="Example: EGA-2026-0001"
         />
 
         <Text style={styles.label}>Phone Number</Text>
+
         <TextInput
           style={styles.input}
           placeholder="Example: 0912345678"
@@ -32,7 +46,6 @@ export default function PortalScreen() {
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Student Information</Text>
-
         <Text style={styles.info}>Name: Not logged in</Text>
         <Text style={styles.info}>Course: Web Development</Text>
         <Text style={styles.info}>Quiz Score: 0%</Text>
@@ -50,12 +63,30 @@ const styles = StyleSheet.create({
 
   header: {
     backgroundColor: "#1e3a8a",
-    paddingTop: 120,
+    paddingTop: 80,
     paddingBottom: 45,
     paddingHorizontal: 25,
     alignItems: "center",
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
+    position: "relative",
+  },
+
+  backButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    backgroundColor: "rgba(255,255,255,0.25)",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    zIndex: 999,
+  },
+
+  backButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 
   logo: {

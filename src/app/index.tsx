@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { ScrollView, Text, View, StyleSheet, Pressable } from "react-native";
 
 export default function HomeScreen() {
@@ -6,38 +6,30 @@ export default function HomeScreen() {
     <ScrollView style={styles.page}>
       <View style={styles.hero}>
         <Text style={styles.logo}>🏫</Text>
-        <Text style={styles.title}>Najash College</Text>
+        <Text style={styles.title}>EGA Technologies</Text>
         <Text style={styles.subtitle}>
           Learn Web Development in English, Arabic, and Somali.
         </Text>
 
-        <Link href="/register" asChild>
-          <Pressable style={styles.heroButton}>
-            <Text style={styles.heroButtonText}>Start Learning</Text>
-          </Pressable>
-        </Link>
+        <Pressable style={styles.heroButton} onPress={() => router.push("/register")}>
+          <Text style={styles.heroButtonText}>Start Learning</Text>
+        </Pressable>
       </View>
 
-      <Link href="/explore" asChild>
-        <Pressable style={styles.card}>
-          <Text style={styles.cardTitle}>📚 Courses</Text>
-          <Text style={styles.cardText}>HTML, CSS, JavaScript, React</Text>
-        </Pressable>
-      </Link>
+      <Pressable style={styles.card} onPress={() => router.push("/explore")}>
+        <Text style={styles.cardTitle}>📚 Courses</Text>
+        <Text style={styles.cardText}>HTML, CSS, JavaScript, React</Text>
+      </Pressable>
 
-      <Link href="/portal" asChild>
-        <Pressable style={styles.card}>
-          <Text style={styles.cardTitle}>🎓 Student Portal</Text>
-          <Text style={styles.cardText}>Login, quiz, progress, certificate</Text>
-        </Pressable>
-      </Link>
+      <Pressable style={styles.card} onPress={() => router.push("/portal")}>
+        <Text style={styles.cardTitle}>🎓 Learner Portal</Text>
+        <Text style={styles.cardText}>Login, quiz, progress, certificate</Text>
+      </Pressable>
 
-      <Link href="/payments" asChild>
-        <Pressable style={styles.card}>
-          <Text style={styles.cardTitle}>💳 Payments</Text>
-          <Text style={styles.cardText}>Course fee: 3000 ETB</Text>
-        </Pressable>
-      </Link>
+      <Pressable style={styles.card} onPress={() => router.push("/payments")}>
+        <Text style={styles.cardTitle}>💳 Payments</Text>
+        <Text style={styles.cardText}>Training fee: Contact EGA</Text>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -69,6 +61,7 @@ const styles = StyleSheet.create({
     margin: 14,
     padding: 22,
     borderRadius: 18,
+    cursor: "pointer" as any,
   },
   cardTitle: { fontSize: 24, fontWeight: "bold", color: "#1e3a8a" },
   cardText: { fontSize: 17, color: "#334155", marginTop: 10 },
