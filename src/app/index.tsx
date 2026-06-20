@@ -6,36 +6,72 @@ export default function HomeScreen() {
     <ScrollView style={styles.page}>
       <View style={styles.hero}>
         <Text style={styles.logo}>🏫</Text>
-        <Text style={styles.title}>EGA Technologies</Text>
+
+        <Text style={styles.title}>
+          EGA Technologies
+        </Text>
+
         <Text style={styles.subtitle}>
           Learn Web Development in English, Arabic, and Somali.
         </Text>
 
-        <Pressable style={styles.heroButton} onPress={() => router.push("/register")}>
+        <Pressable
+          style={styles.heroButton}
+          onPress={() => router.push("/register")}
+        >
           <Text style={styles.heroButtonText}>Start Learning</Text>
         </Pressable>
       </View>
 
-      <Pressable style={styles.card} onPress={() => router.push("/explore")}>
+      <Pressable
+        style={styles.card}
+        onPress={() => router.push("/explore")}
+      >
         <Text style={styles.cardTitle}>📚 Courses</Text>
-        <Text style={styles.cardText}>HTML, CSS, JavaScript, React</Text>
+        <Text style={styles.cardText}>
+          HTML, CSS, JavaScript, React
+        </Text>
       </Pressable>
 
-      <Pressable style={styles.card} onPress={() => router.push("/portal")}>
+      <Pressable
+        style={styles.card}
+        onPress={() => router.push("/portal")}
+      >
         <Text style={styles.cardTitle}>🎓 Learner Portal</Text>
-        <Text style={styles.cardText}>Login, quiz, progress, certificate</Text>
+        <Text style={styles.cardText}>
+          Login, quiz, progress, certificate
+        </Text>
       </Pressable>
 
-      <Pressable style={styles.card} onPress={() => router.push("/payments")}>
+      <Pressable
+        style={styles.card}
+        onPress={() => router.push("/register")}
+      >
+        <Text style={styles.cardTitle}>📝 Register</Text>
+        <Text style={styles.cardText}>
+          Apply for EGA training programs
+        </Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.card}
+        onPress={() => router.push("/payments")}
+      >
         <Text style={styles.cardTitle}>💳 Payments</Text>
-        <Text style={styles.cardText}>Training fee: Contact EGA</Text>
+        <Text style={styles.cardText}>
+          Training fee: Contact EGA
+        </Text>
       </Pressable>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: "#eef3ff" },
+  page: {
+    flex: 1,
+    backgroundColor: "#eef3ff",
+  },
+
   hero: {
     backgroundColor: "#1e3a8a",
     paddingTop: 80,
@@ -45,9 +81,26 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 35,
     borderBottomRightRadius: 35,
   },
-  logo: { fontSize: 50, marginBottom: 15 },
-  title: { fontSize: 36, color: "white", fontWeight: "bold", textAlign: "center" },
-  subtitle: { fontSize: 18, color: "white", marginTop: 12, textAlign: "center" },
+
+  logo: {
+    fontSize: 50,
+    marginBottom: 15,
+  },
+
+  title: {
+    fontSize: 36,
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+
+  subtitle: {
+    fontSize: 18,
+    color: "white",
+    marginTop: 12,
+    textAlign: "center",
+  },
+
   heroButton: {
     backgroundColor: "#facc15",
     marginTop: 30,
@@ -55,14 +108,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 45,
     borderRadius: 30,
   },
-  heroButtonText: { color: "#1e3a8a", fontSize: 20, fontWeight: "bold" },
+
+  heroButtonText: {
+    color: "#1e3a8a",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+
   card: {
     backgroundColor: "white",
     margin: 14,
     padding: 22,
     borderRadius: 18,
-    cursor: "pointer" as any,
   },
-  cardTitle: { fontSize: 24, fontWeight: "bold", color: "#1e3a8a" },
-  cardText: { fontSize: 17, color: "#334155", marginTop: 10 },
+
+  cardTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#1e3a8a",
+  },
+
+  cardText: {
+    fontSize: 17,
+    color: "#334155",
+    marginTop: 10,
+  },
 });

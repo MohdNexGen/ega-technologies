@@ -1,101 +1,67 @@
-import { router } from "expo-router";
-import { ScrollView, Text, View, StyleSheet, Pressable } from "react-native";
+import { Link } from "expo-router";
+import { View, Text, StyleSheet } from "react-native";
 
-export default function CoursesScreen() {
+export default function CoursesPage() {
   return (
-    <ScrollView style={styles.page}>
-      <View style={styles.header}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => router.push("/")}
-        >
-          <Text style={styles.backButtonText}>← Home</Text>
-        </Pressable>
+    <View style={styles.container}>
+      <Link href="/" style={styles.back}>
+        ← Home
+      </Link>
 
-        <Text style={styles.title}>📚 Courses</Text>
+      <Text style={styles.title}>📚 Courses</Text>
+      <Text style={styles.subtitle}>Learn professional skills at EGA Technologies</Text>
 
-        <Text style={styles.subtitle}>
-          Learn professional skills at EGA Technologies
-        </Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.course}>💻 Full Web Development</Text>
+      <Link href="/courses/full-web" style={styles.card}>
+        <Text style={styles.cardTitle}>💻 Full Web Development</Text>
         <Text>HTML, CSS, JavaScript, React</Text>
-      </View>
+      </Link>
 
-      <View style={styles.card}>
-        <Text style={styles.course}>🌐 Arabic Web Development</Text>
+      <Link href="/courses/arabic-web" style={styles.card}>
+        <Text style={styles.cardTitle}>🌐 Arabic Web Development</Text>
         <Text>Programming in Arabic</Text>
-      </View>
+      </Link>
 
-      <View style={styles.card}>
-        <Text style={styles.course}>🇸🇴 Somali Web Development</Text>
+      <Link href="/courses/somali-web" style={styles.card}>
+        <Text style={styles.cardTitle}>🇸🇴 Somali Web Development</Text>
         <Text>Programming in Somali</Text>
-      </View>
+      </Link>
 
-      <View style={styles.card}>
-        <Text style={styles.course}>🖥️ Computer Skills</Text>
+      <Link href="/courses/computer-skills" style={styles.card}>
+        <Text style={styles.cardTitle}>🖥️ Computer Skills</Text>
         <Text>Windows, Word, Excel, PowerPoint</Text>
-      </View>
-    </ScrollView>
+      </Link>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  page: {
+  container: {
     flex: 1,
-    backgroundColor: "#eef3ff",
+    padding: 20,
+    backgroundColor: "#f3f4f6",
   },
-
-  header: {
-    backgroundColor: "#1e3a8a",
-    paddingTop: 100,
-    paddingBottom: 40,
-    alignItems: "center",
-    position: "relative",
-  },
-
-  backButton: {
-    position: "absolute",
-    top: 20,
-    left: 20,
-    backgroundColor: "rgba(255,255,255,0.25)",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    zIndex: 999,
-  },
-
-  backButtonText: {
-    color: "#ffffff",
+  back: {
+    marginBottom: 20,
     fontSize: 16,
-    fontWeight: "bold",
   },
-
   title: {
-    fontSize: 32,
-    color: "white",
+    fontSize: 28,
     fontWeight: "bold",
+    textAlign: "center",
   },
-
   subtitle: {
-    color: "white",
-    marginTop: 10,
-    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 20,
   },
-
   card: {
     backgroundColor: "white",
-    margin: 15,
-    padding: 20,
-    borderRadius: 15,
+    padding: 18,
+    borderRadius: 12,
+    marginBottom: 15,
   },
-
-  course: {
-    fontSize: 20,
+  cardTitle: {
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#1e3a8a",
-    marginBottom: 8,
+    marginBottom: 6,
   },
 });
