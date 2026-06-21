@@ -9,3 +9,4 @@ export const supabase = createClient(
   supabaseUrl,
   supabaseAnonKey
 );
+console.log("REGISTER BUTTON CLICKED");

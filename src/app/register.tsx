@@ -23,6 +23,8 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   async function handleRegister() {
+    console.log("REGISTER BUTTON CLICKED");
+
     const cleanName = fullName.trim();
     const cleanPhone = phone.trim();
     const cleanEmail = email.trim().toLowerCase();
@@ -38,30 +40,39 @@ export default function RegisterPage() {
     try {
       const studentId = "DFS-2026-" + Date.now();
 
-      const { error } = await supabase.from("students").insert({
-        student_id: studentId,
-        name: cleanName,
-        email: cleanEmail,
-        phone: cleanPhone,
-        language: "English",
-        course: "Full Web Development",
-        fee: 3000,
-        payment_status: "Pending",
-        payment_method: "Manual",
-        payment_reference: null,
-      });
+      console.log("BEFORE SUPABASE");
+
+      const { data, error } = await supabase
+        .from("students")
+        .insert([
+          {
+            student_id: studentId,
+            name: cleanName,
+            email: cleanEmail,
+            phone: cleanPhone,
+            language: "English",
+            course: "Full Web Development",
+            fee: 3000,
+            payment_status: "Pending",
+            payment_method: "Manual",
+            payment_reference: null,
+          },
+        ])
+        .select();
+
+      console.log("AFTER SUPABASE");
+      console.log("SUPABASE DATA:", data);
+      console.log("SUPABASE ERROR:", error);
 
       if (error) {
-        console.log("❌ Supabase Error:", error);
         setMessage("❌ Supabase Error: " + error.message);
-        setLoading(false);
         return;
       }
 
       const adminParams = {
         student_id: studentId,
         student_name: cleanName,
-        full_name: cleanName,
+        name: cleanName,
         student_email: cleanEmail,
         student_phone: cleanPhone,
         student_course: "Full Web Development",
@@ -72,7 +83,7 @@ export default function RegisterPage() {
       const studentParams = {
         student_id: studentId,
         student_name: cleanName,
-        full_name: cleanName,
+        name: cleanName,
         student_email: cleanEmail,
         student_phone: cleanPhone,
         student_course: "Full Web Development",
@@ -80,8 +91,17 @@ export default function RegisterPage() {
         to_email: cleanEmail,
       };
 
+      console.log("BEFORE EMAILJS");
+
       await emailjs.send(SERVICE_ID, ADMIN_TEMPLATE_ID, adminParams, PUBLIC_KEY);
-      await emailjs.send(SERVICE_ID, STUDENT_TEMPLATE_ID, studentParams, PUBLIC_KEY);
+      await emailjs.send(
+        SERVICE_ID,
+        STUDENT_TEMPLATE_ID,
+        studentParams,
+        PUBLIC_KEY
+      );
+
+      console.log("AFTER EMAILJS");
 
       setMessage("✅ Registration saved. Admin and student emails sent.");
       setFullName("");
@@ -90,36 +110,101 @@ export default function RegisterPage() {
     } catch (err: any) {
       console.log("REGISTER ERROR:", err);
       setMessage("❌ Error: " + (err?.text || err?.message || "Unknown error"));
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Student Registration</Text>
 
-      <TextInput style={styles.input} placeholder="Full Name" value={fullName} onChangeText={setFullName} />
-      <TextInput style={styles.input} placeholder="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
-      <TextInput style={styles.input} placeholder="Student Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+      <TextInput
+        style={styles.input}
+        placeholder="Full Name"
+        value={fullName}
+        onChangeText={setFullName}
+      />
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? "Please wait..." : "Register"}</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Student Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+
+      <TouchableOpacity
+        style={[styles.button, loading && styles.disabledButton]}
+        onPress={handleRegister}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Please wait..." : "Register"}
+        </Text>
       </TouchableOpacity>
 
       {message ? <Text style={styles.message}>{message}</Text> : null}
 
-      <Link href="/" style={styles.link}>← Back Home</Link>
+      <Link href="/" style={styles.link}>
+        ← Back Home
+      </Link>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 25, paddingTop: 80, backgroundColor: "#fff", flexGrow: 1 },
-  title: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 25 },
-  input: { borderWidth: 1, borderColor: "#ccc", padding: 14, borderRadius: 8, marginBottom: 14, fontSize: 16 },
-  button: { backgroundColor: "#0047d9", padding: 15, borderRadius: 8, marginTop: 5 },
-  buttonText: { color: "#fff", fontWeight: "bold", textAlign: "center" },
-  message: { textAlign: "center", marginTop: 15, fontWeight: "bold" },
-  link: { textAlign: "center", marginTop: 20, color: "#0047d9" },
+  container: {
+    padding: 25,
+    paddingTop: 80,
+    backgroundColor: "#fff",
+    flexGrow: 1,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 25,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 14,
+    fontSize: 16,
+  },
+  button: {
+    backgroundColor: "#0047d9",
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 5,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  message: {
+    textAlign: "center",
+    marginTop: 15,
+    fontWeight: "bold",
+  },
+  link: {
+    textAlign: "center",
+    marginTop: 20,
+    color: "#0047d9",
+  },
 });

@@ -31,18 +31,11 @@ export default function LearnerPortal() {
     try {
       setLoading(true);
 
-      const timeoutId = setTimeout(() => {
-        setLoading(false);
-        setMessage("❌ Supabase timeout. Check URL, key, table, or RLS policy.");
-      }, 10000);
-
       const { data, error } = await supabase
         .from("students")
         .select("*")
         .eq("student_id", studentId.trim())
         .maybeSingle();
-
-      clearTimeout(timeoutId);
 
       if (error) {
         setMessage("❌ Supabase error: " + error.message);
@@ -50,7 +43,7 @@ export default function LearnerPortal() {
       }
 
       if (!data) {
-        setMessage("❌ Student not found: " + studentId.trim());
+        setMessage("❌ Student not found");
         return;
       }
 
@@ -65,7 +58,7 @@ export default function LearnerPortal() {
       setStudent(data);
       setMessage("✅ Login successful");
     } catch (err: any) {
-      setMessage("❌ Login error: " + (err?.message || "Unknown error"));
+      setMessage("❌ Login error: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -80,9 +73,9 @@ export default function LearnerPortal() {
 
   return (
     <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled"
-    >
+  contentContainerStyle={styles.container}
+  keyboardShouldPersistTaps="handled"
+>
       <Link href="/" style={styles.homeButton}>
         ← Home
       </Link>
@@ -111,17 +104,16 @@ export default function LearnerPortal() {
           onChangeText={setPhone}
           keyboardType="phone-pad"
         />
-
         <TouchableOpacity
-          style={[styles.loginButton, loading && styles.disabledButton]}
-          onPress={handleLogin}
-          activeOpacity={0.7}
-          disabled={loading}
-        >
-          <Text style={styles.loginText}>
-            {loading ? "Checking..." : "Login"}
-          </Text>
-        </TouchableOpacity>
+  style={styles.loginButton}
+ 
+  activeOpacity={0.7}
+>
+  <Text style={styles.loginText}>
+    {loading ? "Checking..." : "Login"}
+  </Text>
+</TouchableOpacity>
+      
 
         {message ? <Text style={styles.message}>{message}</Text> : null}
       </View>
