@@ -11,7 +11,6 @@ import {
 import { supabase } from "../lib/supabase";
 
 export default function LearnerPortal() {
-  const [studentId, setStudentId] = useState("");
   const [phone, setPhone] = useState("");
   const [student, setStudent] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -20,49 +19,36 @@ export default function LearnerPortal() {
   async function handleLogin() {
     if (loading) return;
 
-    setMessage("Checking login...");
-    setStudent(null);
+    const cleanPhone = phone.trim();
 
-    if (!studentId.trim() || !phone.trim()) {
-      setMessage("⚠️ Please enter Student ID and Phone Number");
+    if (!cleanPhone) {
+      setMessage("⚠️ Please enter Phone Number");
       return;
     }
 
     try {
       setLoading(true);
-
-      const timeoutId = setTimeout(() => {
-        setLoading(false);
-        setMessage("❌ Supabase timeout. Check URL, key, table, or RLS policy.");
-      }, 10000);
+      setMessage("Checking login...");
+      setStudent(null);
 
       const { data, error } = await supabase
         .from("students")
         .select("*")
-        .eq("student_id", studentId.trim())
-        .maybeSingle();
-
-      clearTimeout(timeoutId);
+        .eq("phone", cleanPhone)
+        .order("created_at", { ascending: false })
+        .limit(1);
 
       if (error) {
         setMessage("❌ Supabase error: " + error.message);
         return;
       }
 
-      if (!data) {
-        setMessage("❌ Student not found: " + studentId.trim());
+      if (!data || data.length === 0) {
+        setMessage("❌ Student not found");
         return;
       }
 
-      const typedPhone = phone.replace(/\D/g, "");
-      const savedPhone = String(data.phone || "").replace(/\D/g, "");
-
-      if (typedPhone !== savedPhone) {
-        setMessage("❌ Phone number does not match");
-        return;
-      }
-
-      setStudent(data);
+      setStudent(data[0]);
       setMessage("✅ Login successful");
     } catch (err: any) {
       setMessage("❌ Login error: " + (err?.message || "Unknown error"));
@@ -73,86 +59,64 @@ export default function LearnerPortal() {
 
   function logout() {
     setStudent(null);
-    setStudentId("");
     setPhone("");
     setMessage("");
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Link href="/" style={styles.homeButton}>
-        ← Home
-      </Link>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Link href="/" style={styles.homeButton}>← Home</Link>
 
       <View style={styles.hero}>
         <Text style={styles.icon}>🎓</Text>
         <Text style={styles.title}>Learner Portal</Text>
-        <Text style={styles.subtitle}>Login to view progress and certificate</Text>
+        <Text style={styles.subtitle}>Login with your phone number</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>Student ID</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Example: EGA-2026-0001"
-          value={studentId}
-          onChangeText={setStudentId}
-          autoCapitalize="characters"
-        />
+      {!student && (
+        <View style={styles.card}>
+          <Text style={styles.label}>Phone Number</Text>
 
-        <Text style={styles.label}>Phone Number</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Example: 0912345678"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Example: 0912345678"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+          />
 
-        <TouchableOpacity
-          style={[styles.loginButton, loading && styles.disabledButton]}
-          onPress={handleLogin}
-          activeOpacity={0.7}
-          disabled={loading}
-        >
-          <Text style={styles.loginText}>
-            {loading ? "Checking..." : "Login"}
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.loginButton, loading && styles.disabledButton]}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            <Text style={styles.loginText}>
+              {loading ? "Checking..." : "Login"}
+            </Text>
+          </TouchableOpacity>
 
-        {message ? <Text style={styles.message}>{message}</Text> : null}
-      </View>
+          {message ? <Text style={styles.message}>{message}</Text> : null}
+        </View>
+      )}
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Student Information</Text>
+      {student && (
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Student Information</Text>
 
-        {!student ? (
-          <>
-            <Text style={styles.info}>Name: Not logged in</Text>
-            <Text style={styles.info}>Course: Web Development</Text>
-            <Text style={styles.info}>Quiz Score: 0%</Text>
-            <Text style={styles.info}>Certificate Status: Not Ready</Text>
-          </>
-        ) : (
-          <>
-            <Text style={styles.info}>Name: {student.full_name}</Text>
-            <Text style={styles.info}>Student ID: {student.student_id}</Text>
-            <Text style={styles.info}>Phone: {student.phone}</Text>
-            <Text style={styles.info}>Email: {student.email || "Not added"}</Text>
-            <Text style={styles.info}>Course: {student.course}</Text>
-            <Text style={styles.info}>Payment: {student.payment_status || "Pending"}</Text>
-            <Text style={styles.info}>Quiz Score: {student.quiz_score || "Not taken"}</Text>
-            <Text style={styles.info}>Certificate Status: {student.certificate_status || "Not Ready"}</Text>
+          <Text style={styles.info}>Name: {student.name || "Not added"}</Text>
+          <Text style={styles.info}>Phone: {student.phone || "Not added"}</Text>
+          <Text style={styles.info}>Email: {student.email || "Not added"}</Text>
+          <Text style={styles.info}>Course: {student.course || "Full Web Development"}</Text>
+          <Text style={styles.info}>Fee: {student.fee || "Contact EGA"}</Text>
+          <Text style={styles.info}>Payment: {student.payment_status || "Pending"}</Text>
+          <Text style={styles.info}>Starting Day: {student.start_date || "Will be announced soon"}</Text>
+          <Text style={styles.info}>Certificate Status: {student.certificate_status || "Not Ready"}</Text>
 
-            <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-              <Text style={styles.logoutText}>Logout</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
+          <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -188,6 +152,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 30,
     fontWeight: "bold",
+    textAlign: "center",
   },
   subtitle: {
     color: "#fff",
@@ -213,7 +178,6 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 14,
     fontSize: 16,
-    backgroundColor: "#fff",
   },
   loginButton: {
     backgroundColor: "#f1c400",
