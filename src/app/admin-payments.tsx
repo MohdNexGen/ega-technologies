@@ -1,25 +1,40 @@
-import { Link } from "expo-router";
-import { useState } from "react";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
   View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  ScrollView,
 } from "react-native";
 import { supabase } from "../lib/supabase";
 
-export default function AdminPayments() {
+export default function PaymentsScreen() {
   const [phone, setPhone] = useState("");
   const [student, setStudent] = useState<any>(null);
+  const [fee, setFee] = useState("Contact EGA");
+  const [startDate, setStartDate] = useState("Coming Soon");
   const [message, setMessage] = useState("");
 
-  async function searchStudent() {
+  async function loadSettings() {
+    const { data } = await supabase
+      .from("settings")
+      .select("*")
+      .eq("key", "course_settings")
+      .maybeSingle();
+
+    if (data) {
+      setFee(data.fee ? `${data.fee} Birr` : "Contact EGA");
+      setStartDate(data.start_date || "Coming Soon");
+    }
+  }
+
+  async function searchPayment() {
     const cleanPhone = phone.trim();
 
     if (!cleanPhone) {
-      setMessage("⚠️ Enter Phone Number");
+      setMessage("⚠️ Enter your phone number");
       return;
     }
 
@@ -44,166 +59,180 @@ export default function AdminPayments() {
     }
 
     setStudent(data[0]);
-    setMessage("✅ Student found");
+    setMessage("✅ Payment record found");
   }
 
-  async function updatePayment(status: "Paid" | "Pending") {
-    if (!student) return;
-
-    const { error } = await supabase
-      .from("students")
-      .update({
-        payment_status: status,
-        payment_method: "Manual",
-      })
-      .eq("id", student.id);
-
-    if (error) {
-      setMessage("❌ Update error: " + error.message);
-      return;
-    }
-
-    setStudent({
-      ...student,
-      payment_status: status,
-      payment_method: "Manual",
-    });
-
-    setMessage(`✅ Payment marked as ${status}`);
-  }
+  useEffect(() => {
+    loadSettings();
+  }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Link href="/admin-dashboard" style={styles.homeButton}>
-        ← Dashboard
-      </Link>
+    <ScrollView style={styles.page}>
+      <View style={styles.header}>
+        <Pressable style={styles.backButton} onPress={() => router.push("/")}>
+          <Text style={styles.backButtonText}>← Home</Text>
+        </Pressable>
 
-      <View style={styles.hero}>
-        <Text style={styles.icon}>💳</Text>
-        <Text style={styles.title}>Payment Management</Text>
-        <Text style={styles.subtitle}>Search student by phone and update payment</Text>
+        <Text style={styles.title}>💳 Payments</Text>
+        <Text style={styles.subtitle}>EGA Technologies Payment Center</Text>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.label}>Phone Number</Text>
+        <Text style={styles.cardTitle}>Search Payment</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Example: 6135135109"
+          placeholder="Enter your phone number"
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
         />
 
-        <TouchableOpacity style={styles.searchButton} onPress={searchStudent}>
-          <Text style={styles.buttonText}>Search Student</Text>
-        </TouchableOpacity>
+        <Pressable style={styles.searchButton} onPress={searchPayment}>
+          <Text style={styles.searchButtonText}>Check Payment Status</Text>
+        </Pressable>
 
-        {message ? <Text style={styles.message}>{message}</Text> : null}
+        {!!message && <Text style={styles.message}>{message}</Text>}
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Course Fee</Text>
+        <Text style={styles.amount}>{fee}</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Start Date</Text>
+        <Text style={styles.text}>{startDate}</Text>
       </View>
 
       {student && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Student Payment</Text>
+        <>
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Student Details</Text>
+            <Text style={styles.text}>Name: {student.name || "Not added"}</Text>
+            <Text style={styles.text}>
+              Student ID: {student.student_id || "N/A"}
+            </Text>
+            <Text style={styles.text}>Phone: {student.phone || "Not added"}</Text>
+            <Text style={styles.text}>Email: {student.email || "Not added"}</Text>
+            <Text style={styles.text}>
+              Course: {student.course || "Full Web Development"}
+            </Text>
+          </View>
 
-          <Text style={styles.info}>Name: {student.name || "Not added"}</Text>
-          <Text style={styles.info}>Phone: {student.phone || "Not added"}</Text>
-          <Text style={styles.info}>Email: {student.email || "Not added"}</Text>
-          <Text style={styles.info}>Course: {student.course || "Full Web Development"}</Text>
-          <Text style={styles.info}>Fee: {student.fee || "Not added"} Birr</Text>
-          <Text style={styles.info}>Status: {student.payment_status || "Pending"}</Text>
-
-          <TouchableOpacity
-            style={styles.paidButton}
-            onPress={() => updatePayment("Paid")}
-          >
-            <Text style={styles.paidText}>Mark as Paid</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.pendingButton}
-            onPress={() => updatePayment("Pending")}
-          >
-            <Text style={styles.paidText}>Mark as Pending</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Payment Status</Text>
+            <Text style={styles.status}>
+              {student.payment_status || "Pending"}
+            </Text>
+            <Text style={styles.text}>
+              Method: {student.payment_method || "Not selected"}
+            </Text>
+            <Text style={styles.text}>
+              Paid Date:{" "}
+              {student.paid_at
+                ? new Date(student.paid_at).toLocaleString()
+                : "Not paid yet"}
+            </Text>
+          </View>
+        </>
       )}
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Payment Method</Text>
+        <Text style={styles.text}>Bank Transfer, Cash, Mobile Payment</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Notice</Text>
+        <Text style={styles.text}>Online payment integration coming soon.</Text>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 18,
-    backgroundColor: "#f4f6fb",
-    minHeight: "100%",
+  page: {
+    flex: 1,
+    backgroundColor: "#eef2ff",
   },
-  homeButton: {
-    backgroundColor: "#234c9f",
-    color: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    fontWeight: "bold",
-    alignSelf: "flex-start",
-    marginBottom: 15,
-  },
-  hero: {
-    backgroundColor: "#062b8f",
-    padding: 35,
-    borderRadius: 18,
-    marginBottom: 18,
+  header: {
+    backgroundColor: "#1e3a8a",
+    paddingTop: 80,
+    paddingBottom: 40,
     alignItems: "center",
+    position: "relative",
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
-  icon: {
-    fontSize: 36,
-    marginBottom: 10,
+  backButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    backgroundColor: "rgba(255,255,255,0.25)",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+  },
+  backButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   title: {
-    color: "#fff",
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: "bold",
-    textAlign: "center",
+    color: "white",
   },
   subtitle: {
-    color: "#fff",
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: "center",
+    color: "white",
+    marginTop: 10,
+    fontSize: 16,
   },
   card: {
-    backgroundColor: "#fff",
-    padding: 18,
-    borderRadius: 14,
-    marginBottom: 18,
+    backgroundColor: "white",
+    margin: 15,
+    padding: 20,
+    borderRadius: 15,
   },
   cardTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#10245c",
-    marginBottom: 12,
+    color: "#1e3a8a",
+    marginBottom: 10,
   },
-  label: {
+  amount: {
+    fontSize: 28,
     fontWeight: "bold",
-    color: "#10245c",
+    color: "#16a34a",
+  },
+  text: {
+    fontSize: 16,
+    color: "#475569",
     marginBottom: 6,
+  },
+  status: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#16a34a",
+    marginBottom: 10,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#cbd5e1",
     borderRadius: 10,
     padding: 14,
-    marginBottom: 14,
     fontSize: 16,
+    marginBottom: 14,
   },
   searchButton: {
-    backgroundColor: "#f1c400",
-    padding: 16,
+    backgroundColor: "#facc15",
+    padding: 15,
     borderRadius: 30,
     alignItems: "center",
   },
-  buttonText: {
-    color: "#111",
+  searchButtonText: {
+    color: "#111827",
     fontWeight: "bold",
     fontSize: 16,
   },
@@ -211,29 +240,6 @@ const styles = StyleSheet.create({
     marginTop: 14,
     textAlign: "center",
     fontWeight: "bold",
-    color: "#10245c",
-  },
-  info: {
-    fontSize: 15,
-    marginBottom: 7,
-    color: "#222",
-  },
-  paidButton: {
-    backgroundColor: "#008000",
-    padding: 16,
-    borderRadius: 30,
-    alignItems: "center",
-    marginTop: 15,
-  },
-  pendingButton: {
-    backgroundColor: "#b00020",
-    padding: 16,
-    borderRadius: 30,
-    alignItems: "center",
-    marginTop: 12,
-  },
-  paidText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: "#1e3a8a",
   },
 });

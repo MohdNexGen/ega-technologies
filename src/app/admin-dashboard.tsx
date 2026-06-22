@@ -12,7 +12,7 @@ export default function AdminDashboard() {
         <Text style={styles.icon}>📊</Text>
         <Text style={styles.title}>Admin Dashboard</Text>
         <Text style={styles.subtitle}>
-          EGA Technologies student summary
+          EGA Technologies management system
         </Text>
       </View>
 
@@ -22,6 +22,14 @@ export default function AdminDashboard() {
 
       <Link href="/admin-payments" style={styles.linkButton}>
         💳 Payment Management
+      </Link>
+
+      <Link href="/fee-settings" style={styles.linkButton}>
+        ⚙️ Fee Settings
+      </Link>
+
+      <Link href="/learner-portal" style={styles.linkButton}>
+        🎓 Learner Portal
       </Link>
     </ScrollView>
   );
@@ -58,6 +66,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 30,
     fontWeight: "bold",
+    textAlign: "center",
   },
   subtitle: {
     color: "#fff",
