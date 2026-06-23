@@ -11,9 +11,14 @@ import {
 import { supabase } from "../lib/supabase";
 
 export default function FeeSettings() {
-  const [fee, setFee] = useState("");
-  const [startDate, setStartDate] = useState("");
+  const [fee, setFee] = useState("3000");
+  const [startDate, setStartDate] = useState("Coming Soon");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
 
   async function loadSettings() {
     setMessage("Loading settings...");
@@ -30,53 +35,50 @@ export default function FeeSettings() {
     }
 
     if (data) {
-      setFee(String(data.fee || ""));
-      setStartDate(data.start_date || "");
+      setFee(String(data.fee ?? "3000"));
+      setStartDate(String(data.start_date ?? "Coming Soon"));
       setMessage("✅ Settings loaded");
     } else {
-      setMessage("No settings yet. Add fee and start date.");
+      setMessage("No settings found. Save to create one.");
     }
   }
 
   async function saveSettings() {
-    if (!fee.trim()) {
-      setMessage("⚠️ Enter course fee");
+    if (loading) return;
+
+    if (!fee.trim() || !startDate.trim()) {
+      setMessage("⚠️ Please enter fee and start date");
       return;
     }
 
-    if (!startDate.trim()) {
-      setMessage("⚠️ Enter start date");
-      return;
-    }
+    setLoading(true);
+    setMessage("Saving...");
 
-    setMessage("Saving settings...");
+    const { error } = await supabase
+      .from("settings")
+      .upsert(
+        {
+          key: "course_settings",
+          fee: Number(fee),
+          start_date: startDate.trim(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "key" }
+      );
 
-    const { error } = await supabase.from("settings").upsert({
-      key: "course_settings",
-      fee: Number(fee),
-      start_date: startDate.trim(),
-      updated_at: new Date().toISOString(),
-    });
+    setLoading(false);
 
     if (error) {
       setMessage("❌ Save error: " + error.message);
       return;
     }
 
-    setMessage("✅ Fee settings saved successfully");
+    setMessage("✅ Settings saved successfully");
   }
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Link href="/admin-dashboard" style={styles.backButton}>
-        ← Dashboard
-      </Link>
-
-      <View style={styles.hero}>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
         <Text style={styles.icon}>⚙️</Text>
         <Text style={styles.title}>Fee Settings</Text>
         <Text style={styles.subtitle}>
@@ -88,25 +90,37 @@ export default function FeeSettings() {
         <Text style={styles.label}>Course Fee</Text>
         <TextInput
           style={styles.input}
-          placeholder="Example: 3000"
           value={fee}
           onChangeText={setFee}
+          placeholder="Example: 3000"
           keyboardType="numeric"
         />
 
         <Text style={styles.label}>Start Date</Text>
         <TextInput
           style={styles.input}
-          placeholder="Example: July 15, 2026"
           value={startDate}
           onChangeText={setStartDate}
+          placeholder="Example: July 1, 2026"
         />
 
-        <TouchableOpacity style={styles.saveButton} onPress={saveSettings}>
-          <Text style={styles.saveText}>Save Settings</Text>
+        <TouchableOpacity
+          style={[styles.button, loading && styles.disabledButton]}
+          onPress={saveSettings}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "Saving..." : "Save Settings"}
+          </Text>
         </TouchableOpacity>
 
-        {!!message && <Text style={styles.message}>{message}</Text>}
+        {message ? <Text style={styles.message}>{message}</Text> : null}
+
+        <Link href="/payments" asChild>
+          <TouchableOpacity style={styles.backButton}>
+            <Text style={styles.backText}>← Back to Payments</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
     </ScrollView>
   );
@@ -114,76 +128,82 @@ export default function FeeSettings() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 18,
-    backgroundColor: "#eef3ff",
-    minHeight: "100%",
+    flex: 1,
+    backgroundColor: "#edf3ff",
   },
-  backButton: {
-    backgroundColor: "#234c9f",
-    color: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    fontWeight: "bold",
-    alignSelf: "flex-start",
-    marginBottom: 15,
-  },
-  hero: {
-    backgroundColor: "#10245c",
-    padding: 35,
-    borderRadius: 18,
-    marginBottom: 18,
+  header: {
+    backgroundColor: "#12306d",
+    padding: 40,
     alignItems: "center",
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   icon: {
-    fontSize: 36,
+    fontSize: 44,
     marginBottom: 10,
   },
   title: {
-    color: "#fff",
-    fontSize: 30,
+    fontSize: 34,
     fontWeight: "bold",
-    textAlign: "center",
+    color: "white",
   },
   subtitle: {
-    color: "#dbeafe",
-    fontSize: 14,
+    fontSize: 16,
+    color: "#dbe7ff",
     marginTop: 8,
     textAlign: "center",
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "white",
+    margin: 18,
     padding: 18,
-    borderRadius: 14,
+    borderRadius: 16,
   },
   label: {
+    fontSize: 17,
     fontWeight: "bold",
-    color: "#10245c",
-    marginBottom: 6,
+    color: "#12306d",
+    marginBottom: 8,
+    marginTop: 12,
   },
   input: {
+    backgroundColor: "white",
     borderWidth: 1,
     borderColor: "#ddd",
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 14,
-    marginBottom: 14,
-    fontSize: 16,
+    fontSize: 18,
+    marginBottom: 8,
   },
-  saveButton: {
+  button: {
     backgroundColor: "#16a34a",
     padding: 16,
     borderRadius: 30,
     alignItems: "center",
+    marginTop: 18,
   },
-  saveText: {
-    color: "#fff",
+  disabledButton: {
+    backgroundColor: "#86efac",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
     fontWeight: "bold",
-    fontSize: 16,
   },
   message: {
-    marginTop: 14,
+    marginTop: 18,
     textAlign: "center",
+    fontSize: 16,
     fontWeight: "bold",
-    color: "#10245c",
+    color: "#12306d",
+  },
+  backButton: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  backText: {
+    color: "#12306d",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

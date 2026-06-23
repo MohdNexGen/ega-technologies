@@ -11,7 +11,8 @@ import {
 import { supabase } from "../lib/supabase";
 
 export default function LearnerPortal() {
-  const [studentId, setStudentId] = useState("");
+  const [
+    studentId, setStudentId] = useState("");
   const [phone, setPhone] = useState("");
   const [student, setStudent] = useState<any>(null);
   const [loading, setLoading] = useState(false);
