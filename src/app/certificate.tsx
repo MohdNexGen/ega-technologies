@@ -143,11 +143,15 @@ const styles = StyleSheet.create({
   certificate: {
     marginTop: 30,
     backgroundColor: "#fff",
-    padding: 25,
+    paddingVertical: 40,
+    paddingHorizontal: 25,
     borderRadius: 15,
     borderWidth: 3,
     borderColor: "#d4af37",
     alignItems: "center",
+    alignSelf: "center",
+    width: "100%",
+    maxWidth: 800,
   },
   certTitle: {
     fontSize: 26,
@@ -160,13 +164,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   name: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: "bold",
     color: "#b8860b",
     marginVertical: 15,
   },
   course: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#003366",
     marginVertical: 10,

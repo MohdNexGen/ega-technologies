@@ -13,12 +13,7 @@ import { supabase } from "../lib/supabase";
 const questions = [
   {
     question: "What does HTML stand for?",
-    options: [
-      "Hyper Text Markup Language",
-      "Home Tool Markup Language",
-      "Hyperlinks Text Machine Language",
-      "High Text Main Language",
-    ],
+    options: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks Text Machine Language", "High Text Main Language"],
     answer: "Hyper Text Markup Language",
   },
   {
@@ -138,40 +133,18 @@ export default function QuizPage() {
         Enter your Student ID and Phone Number so your result can save to Supabase.
       </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Student ID"
-        value={studentId}
-        onChangeText={setStudentId}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Phone Number"
-        value={phone}
-        onChangeText={setPhone}
-        keyboardType="phone-pad"
-      />
+      <TextInput style={styles.input} placeholder="Student ID" value={studentId} onChangeText={setStudentId} />
+      <TextInput style={styles.input} placeholder="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
       {questions.map((q, index) => (
         <View key={index} style={styles.card}>
-          <Text style={styles.question}>
-            {index + 1}. {q.question}
-          </Text>
+          <Text style={styles.question}>{index + 1}. {q.question}</Text>
 
           {q.options.map((option) => (
             <TouchableOpacity
               key={option}
-              style={[
-                styles.option,
-                answers[index] === option && styles.selectedOption,
-              ]}
-              onPress={() =>
-                setAnswers({
-                  ...answers,
-                  [index]: option,
-                })
-              }
+              style={[styles.option, answers[index] === option && styles.selectedOption]}
+              onPress={() => setAnswers({ ...answers, [index]: option })}
             >
               <Text style={styles.optionText}>{option}</Text>
             </TouchableOpacity>
@@ -179,14 +152,8 @@ export default function QuizPage() {
         </View>
       ))}
 
-      <TouchableOpacity
-        style={[styles.button, loading && styles.disabledButton]}
-        onPress={submitQuiz}
-        disabled={loading}
-      >
-        <Text style={styles.buttonText}>
-          {loading ? "Saving..." : "Send Quiz"}
-        </Text>
+      <TouchableOpacity style={[styles.button, loading && styles.disabledButton]} onPress={submitQuiz} disabled={loading}>
+        <Text style={styles.buttonText}>{loading ? "Saving..." : "Send Quiz"}</Text>
       </TouchableOpacity>
 
       {score !== null && <Text style={styles.score}>Score: {score}%</Text>}
@@ -194,10 +161,7 @@ export default function QuizPage() {
       {message ? <Text style={styles.message}>{message}</Text> : null}
 
       {score !== null && score >= 70 && (
-        <TouchableOpacity
-          style={styles.certificateButton}
-          onPress={() => router.push("/certificate")}
-        >
+        <TouchableOpacity style={styles.certificateButton} onPress={() => router.push("/certificate")}>
           <Text style={styles.certificateButtonText}>🎓 View Certificate</Text>
         </TouchableOpacity>
       )}
@@ -206,108 +170,21 @@ export default function QuizPage() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: "#f5f7fb",
-    minHeight: "100%",
-  },
-  back: {
-    fontSize: 16,
-    marginBottom: 15,
-    color: "#003366",
-    fontWeight: "bold",
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#003366",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#555",
-    marginBottom: 18,
-    lineHeight: 23,
-  },
-  input: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    padding: 14,
-    fontSize: 16,
-    marginBottom: 12,
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 14,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#e5e5e5",
-  },
-  question: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#222",
-    marginBottom: 12,
-  },
-  option: {
-    padding: 13,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    marginBottom: 10,
-    backgroundColor: "#fafafa",
-  },
-  selectedOption: {
-    backgroundColor: "#dceeff",
-    borderColor: "#003366",
-  },
-  optionText: {
-    fontSize: 16,
-    color: "#222",
-  },
-  button: {
-    backgroundColor: "#003366",
-    padding: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  disabledButton: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  score: {
-    marginTop: 18,
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#003366",
-  },
-  message: {
-    marginTop: 15,
-    fontSize: 16,
-    textAlign: "center",
-    fontWeight: "bold",
-    color: "#333",
-  },
-  certificateButton: {
-    backgroundColor: "#b8860b",
-    padding: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 30,
-  },
-  certificateButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+  container: { padding: 20, backgroundColor: "#f5f7fb", minHeight: "100%" },
+  back: { fontSize: 16, marginBottom: 15, color: "#003366", fontWeight: "bold" },
+  title: { fontSize: 30, fontWeight: "bold", color: "#003366", marginBottom: 8 },
+  subtitle: { fontSize: 16, color: "#555", marginBottom: 18, lineHeight: 23 },
+  input: { backgroundColor: "#fff", borderWidth: 1, borderColor: "#ddd", borderRadius: 10, padding: 14, fontSize: 16, marginBottom: 12 },
+  card: { backgroundColor: "#fff", padding: 16, borderRadius: 14, marginBottom: 16, borderWidth: 1, borderColor: "#e5e5e5" },
+  question: { fontSize: 18, fontWeight: "bold", color: "#222", marginBottom: 12 },
+  option: { padding: 13, borderRadius: 10, borderWidth: 1, borderColor: "#ddd", marginBottom: 10, backgroundColor: "#fafafa" },
+  selectedOption: { backgroundColor: "#dceeff", borderColor: "#003366" },
+  optionText: { fontSize: 16, color: "#222" },
+  button: { backgroundColor: "#003366", padding: 16, borderRadius: 12, alignItems: "center", marginTop: 10 },
+  disabledButton: { opacity: 0.6 },
+  buttonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
+  score: { marginTop: 18, fontSize: 22, fontWeight: "bold", textAlign: "center", color: "#003366" },
+  message: { marginTop: 15, fontSize: 16, textAlign: "center", fontWeight: "bold", color: "#333" },
+  certificateButton: { backgroundColor: "#b8860b", padding: 16, borderRadius: 12, alignItems: "center", marginTop: 20, marginBottom: 30 },
+  certificateButtonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
 });
