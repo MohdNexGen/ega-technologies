@@ -1,67 +1,115 @@
 import { Link } from "expo-router";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+} from "react-native";
 
-export default function CoursesPage() {
+export default function ExploreScreen() {
   return (
-    <View style={styles.container}>
-      <Link href="/" style={styles.back}>
-        ← Home
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+    >
+      <Link href="/" style={styles.backLink}>
+        ← Back to Home
       </Link>
 
-      <Text style={styles.title}>📚 Courses</Text>
-      <Text style={styles.subtitle}>Learn professional skills at EGA Technologies</Text>
+      <Text style={styles.title}>📚 EGA Courses</Text>
+      <Text style={styles.subtitle}>
+        Choose a course and start learning.
+      </Text>
 
-      <Link href="/courses/full-web" style={styles.card}>
-        <Text style={styles.cardTitle}>💻 Full Web Development</Text>
-        <Text>HTML, CSS, JavaScript, React</Text>
+      {/* HTML Course */}
+      <Link href="/courses/html" asChild>
+        <TouchableOpacity style={styles.card}>
+          <Text style={styles.icon}>🌐</Text>
+          <Text style={styles.cardTitle}>HTML Complete Course</Text>
+          <Text style={styles.cardText}>
+            Learn HTML from beginner to advanced with examples and practice.
+          </Text>
+        </TouchableOpacity>
       </Link>
 
-      <Link href="/courses/arabic-web" style={styles.card}>
-        <Text style={styles.cardTitle}>🌐 Arabic Web Development</Text>
-        <Text>Programming in Arabic</Text>
-      </Link>
+      {/* Future CSS Course */}
+      <TouchableOpacity style={styles.card}>
+        <Text style={styles.icon}>🎨</Text>
+        <Text style={styles.cardTitle}>CSS Course</Text>
+        <Text style={styles.cardText}>
+          Coming Soon - Learn styling, layouts, Flexbox, and responsive design.
+        </Text>
+      </TouchableOpacity>
 
-      <Link href="/courses/somali-web" style={styles.card}>
-        <Text style={styles.cardTitle}>🇸🇴 Somali Web Development</Text>
-        <Text>Programming in Somali</Text>
-      </Link>
+      {/* Future JavaScript Course */}
+      <TouchableOpacity style={styles.card}>
+        <Text style={styles.icon}>⚡</Text>
+        <Text style={styles.cardTitle}>JavaScript Course</Text>
+        <Text style={styles.cardText}>
+          Coming Soon - Learn programming fundamentals and interactivity.
+        </Text>
+      </TouchableOpacity>
 
-      <Link href="/courses/computer-skills" style={styles.card}>
-        <Text style={styles.cardTitle}>🖥️ Computer Skills</Text>
-        <Text>Windows, Word, Excel, PowerPoint</Text>
-      </Link>
-    </View>
+      {/* Computer Skills */}
+      <TouchableOpacity style={styles.card}>
+        <Text style={styles.icon}>💻</Text>
+        <Text style={styles.cardTitle}>Computer Skills</Text>
+        <Text style={styles.cardText}>
+          Learn essential computer skills for beginners.
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f3f4f6",
+    backgroundColor: "#f4f7fb",
   },
-  back: {
-    marginBottom: 20,
+  content: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  backLink: {
+    color: "#0a66c2",
     fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 20,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontSize: 30,
+    fontWeight: "900",
+    color: "#102a43",
+    marginBottom: 8,
   },
   subtitle: {
-    textAlign: "center",
-    marginBottom: 20,
+    fontSize: 16,
+    color: "#486581",
+    marginBottom: 25,
   },
   card: {
-    backgroundColor: "white",
-    padding: 18,
-    borderRadius: 12,
-    marginBottom: 15,
+    backgroundColor: "#fff",
+    padding: 22,
+    borderRadius: 18,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: "#d9e2ec",
+  },
+  icon: {
+    fontSize: 36,
+    marginBottom: 10,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 6,
+    fontSize: 22,
+    fontWeight: "900",
+    color: "#102a43",
+    marginBottom: 8,
+  },
+  cardText: {
+    fontSize: 16,
+    color: "#486581",
+    lineHeight: 24,
   },
 });

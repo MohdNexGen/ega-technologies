@@ -58,7 +58,6 @@ export default function PaymentsScreen() {
       return;
     }
 
-    console.log("STUDENT DATA:", data[0]);
     setStudent(data[0]);
     setMessage("✅ Payment record found");
   }
@@ -69,11 +68,20 @@ export default function PaymentsScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={() => router.push("/")}>
-          <Text style={styles.backButtonText}>← Home</Text>
+      <View style={styles.topRow}>
+        <Pressable style={styles.navButton} onPress={() => router.push("/")}>
+          <Text style={styles.navText}>← Home</Text>
         </Pressable>
 
+        <Pressable
+          style={styles.navButton}
+          onPress={() => router.push("/admin-dashboard")}
+        >
+          <Text style={styles.navText}>← Admin</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.header}>
         <Text style={styles.title}>💳 Payments</Text>
         <Text style={styles.subtitle}>EGA Technologies Payment Center</Text>
       </View>
@@ -83,7 +91,7 @@ export default function PaymentsScreen() {
 
         <TextInput
           style={styles.input}
-          placeholder="Enter your phone number"
+          placeholder="Enter phone number"
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
@@ -95,38 +103,35 @@ export default function PaymentsScreen() {
 
         {!!message && <Text style={styles.message}>{message}</Text>}
 
-        {student ? (
+        {student && (
           <View style={styles.resultBox}>
             <Text style={styles.cardTitle}>Student Details</Text>
-            <Text style={styles.text}>Name: {student.name || student.full_name || "Not added"}</Text>
-            <Text style={styles.text}>Student ID: {student.student_id || "N/A"}</Text>
-            <Text style={styles.text}>Phone: {student.phone || "Not added"}</Text>
-            <Text style={styles.text}>Email: {student.email || "Not added"}</Text>
-            <Text style={styles.text}>Course: {student.course || "Full Web Development"}</Text>
-            <Text style={styles.status}>Payment: {student.payment_status || "Pending"}</Text>
-          </View>
-        ) : null}
-      </View>
 
-      {student && (
-        <>
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Student Details</Text>
-            <Text style={styles.text}>Name: {student.name || "Not added"}</Text>
-            <Text style={styles.text}>Student ID: {student.student_id || "N/A"}</Text>
+            <Text style={styles.text}>
+              Name: {student.name || student.full_name || "Not added"}
+            </Text>
+            <Text style={styles.text}>
+              Student ID: {student.student_id || "N/A"}
+            </Text>
             <Text style={styles.text}>Phone: {student.phone || "Not added"}</Text>
             <Text style={styles.text}>Email: {student.email || "Not added"}</Text>
             <Text style={styles.text}>
               Course: {student.course || "Full Web Development"}
             </Text>
-          </View>
 
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Payment Status</Text>
-            <Text style={styles.status}>{student.payment_status || "Pending"}</Text>
+            <Text
+              style={[
+                styles.status,
+                student.payment_status === "Paid" ? styles.paid : styles.pending,
+              ]}
+            >
+              Payment: {student.payment_status || "Pending"}
+            </Text>
+
             <Text style={styles.text}>
               Method: {student.payment_method || "Not selected"}
             </Text>
+
             <Text style={styles.text}>
               Paid Date:{" "}
               {student.paid_at
@@ -134,8 +139,8 @@ export default function PaymentsScreen() {
                 : "Not paid yet"}
             </Text>
           </View>
-        </>
-      )}
+        )}
+      </View>
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Course Fee</Text>
@@ -162,25 +167,31 @@ export default function PaymentsScreen() {
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: "#eef2ff" },
-  header: {
-    backgroundColor: "#1e3a8a",
-    paddingTop: 80,
-    paddingBottom: 40,
-    alignItems: "center",
-    position: "relative",
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+  scrollContent: { paddingBottom: 25 },
+  topRow: {
+    flexDirection: "row",
+    gap: 10,
+    padding: 15,
+    paddingTop: 20,
   },
-  backButton: {
-    position: "absolute",
-    top: 20,
-    left: 20,
-    backgroundColor: "rgba(255,255,255,0.25)",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+  navButton: {
+    backgroundColor: "#1e3a8a",
+    paddingVertical: 10,
+    paddingHorizontal: 14,
     borderRadius: 10,
   },
-  backButtonText: { color: "#ffffff", fontSize: 16, fontWeight: "bold" },
+  navText: {
+    color: "#ffffff",
+    fontWeight: "bold",
+  },
+  header: {
+    backgroundColor: "#1e3a8a",
+    padding: 35,
+    alignItems: "center",
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    marginBottom: 5,
+  },
   title: { fontSize: 32, fontWeight: "bold", color: "white" },
   subtitle: { color: "white", marginTop: 10, fontSize: 16 },
   card: {
@@ -200,9 +211,11 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#16a34a",
+    marginTop: 8,
     marginBottom: 10,
   },
+  paid: { color: "#16a34a" },
+  pending: { color: "#ca8a04" },
   input: {
     borderWidth: 1,
     borderColor: "#cbd5e1",

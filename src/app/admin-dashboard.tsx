@@ -17,19 +17,19 @@ export default function AdminDashboard() {
       </View>
 
       <Link href="/admin-students" style={styles.linkButton}>
-        📋 Student List
+        📋 View / Search Students
       </Link>
 
       <Link href="/admin-payments" style={styles.linkButton}>
-        💳 Payment Management
+        💳 Update Payment Status
       </Link>
 
       <Link href="/fee-settings" style={styles.linkButton}>
-        ⚙️ Fee Settings
+        ⚙️ Fee Amount & Starting Date
       </Link>
 
       <Link href="/learner-portal" style={styles.linkButton}>
-        🎓 Learner Portal
+        🎓 Test Learner Portal
       </Link>
     </ScrollView>
   );

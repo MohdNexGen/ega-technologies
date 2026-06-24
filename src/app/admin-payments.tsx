@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -10,31 +10,14 @@ import {
 } from "react-native";
 import { supabase } from "../lib/supabase";
 
-export default function PaymentsScreen() {
-  const [phone, setPhone] = useState("");
+export default function AdminPayments() {
+  const [search, setSearch] = useState("");
   const [student, setStudent] = useState<any>(null);
-  const [fee, setFee] = useState("Contact EGA");
-  const [startDate, setStartDate] = useState("Coming Soon");
   const [message, setMessage] = useState("");
 
-  async function loadSettings() {
-    const { data } = await supabase
-      .from("settings")
-      .select("*")
-      .eq("key", "course_settings")
-      .maybeSingle();
-
-    if (data) {
-      setFee(data.fee ? `${data.fee} Birr` : "Contact EGA");
-      setStartDate(data.start_date || "Coming Soon");
-    }
-  }
-
-  async function searchPayment() {
-    const cleanPhone = phone.trim();
-
-    if (!cleanPhone) {
-      setMessage("⚠️ Enter your phone number");
+  async function searchStudent() {
+    if (!search.trim()) {
+      setMessage("⚠️ Enter Student ID or Phone");
       return;
     }
 
@@ -44,8 +27,7 @@ export default function PaymentsScreen() {
     const { data, error } = await supabase
       .from("students")
       .select("*")
-      .eq("phone", cleanPhone)
-      .order("created_at", { ascending: false })
+      .or(`student_id.eq.${search.trim()},phone.eq.${search.trim()}`)
       .limit(1);
 
     if (error) {
@@ -59,187 +41,207 @@ export default function PaymentsScreen() {
     }
 
     setStudent(data[0]);
-    setMessage("✅ Payment record found");
+    setMessage("✅ Student found");
   }
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
+  async function markPaid() {
+    if (!student) return;
+
+    const paidDate = new Date().toISOString();
+
+    const { error } = await supabase
+      .from("students")
+      .update({
+        payment_status: "Paid",
+        payment_method: "Manual",
+        paid_at: paidDate,
+      })
+      .eq("id", student.id);
+
+    if (error) {
+      setMessage("❌ " + error.message);
+      return;
+    }
+
+    setStudent({
+      ...student,
+      payment_status: "Paid",
+      payment_method: "Manual",
+      paid_at: paidDate,
+    });
+
+    setMessage("✅ Payment updated to Paid");
+  }
+
+  async function markPending() {
+    if (!student) return;
+
+    const { error } = await supabase
+      .from("students")
+      .update({
+        payment_status: "Pending",
+        payment_method: "Not Selected",
+        paid_at: null,
+      })
+      .eq("id", student.id);
+
+    if (error) {
+      setMessage("❌ " + error.message);
+      return;
+    }
+
+    setStudent({
+      ...student,
+      payment_status: "Pending",
+      payment_method: "Not Selected",
+      paid_at: null,
+    });
+
+    setMessage("✅ Payment updated to Pending");
+  }
 
   return (
-    <ScrollView style={styles.page}>
-      <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={() => router.push("/")}>
-          <Text style={styles.backButtonText}>← Home</Text>
-        </Pressable>
+    <ScrollView style={styles.container}>
+      <Pressable
+        style={styles.backButton}
+        onPress={() => router.push("/admin-dashboard")}
+      >
+        <Text style={styles.backText}>← Admin Dashboard</Text>
+      </Pressable>
 
-        <Text style={styles.title}>💳 Payments</Text>
-        <Text style={styles.subtitle}>EGA Technologies Payment Center</Text>
-      </View>
+      <Text style={styles.title}>💳 Admin Payments</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Search Payment</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Student ID or Phone"
+        value={search}
+        onChangeText={setSearch}
+      />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your phone number"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-        />
+      <Pressable
+        style={styles.searchButton}
+        onPress={searchStudent}
+      >
+        <Text style={styles.buttonText}>Search Student</Text>
+      </Pressable>
 
-        <Pressable style={styles.searchButton} onPress={searchPayment}>
-          <Text style={styles.searchButtonText}>Check Payment Status</Text>
-        </Pressable>
-
-        {!!message && <Text style={styles.message}>{message}</Text>}
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Course Fee</Text>
-        <Text style={styles.amount}>{fee}</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Start Date</Text>
-        <Text style={styles.text}>{startDate}</Text>
-      </View>
-
-      {student && (
-        <>
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Student Details</Text>
-            <Text style={styles.text}>Name: {student.name || "Not added"}</Text>
-            <Text style={styles.text}>
-              Student ID: {student.student_id || "N/A"}
-            </Text>
-            <Text style={styles.text}>Phone: {student.phone || "Not added"}</Text>
-            <Text style={styles.text}>Email: {student.email || "Not added"}</Text>
-            <Text style={styles.text}>
-              Course: {student.course || "Full Web Development"}
-            </Text>
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Payment Status</Text>
-            <Text style={styles.status}>
-              {student.payment_status || "Pending"}
-            </Text>
-            <Text style={styles.text}>
-              Method: {student.payment_method || "Not selected"}
-            </Text>
-            <Text style={styles.text}>
-              Paid Date:{" "}
-              {student.paid_at
-                ? new Date(student.paid_at).toLocaleString()
-                : "Not paid yet"}
-            </Text>
-          </View>
-        </>
+      {!!message && (
+        <Text style={styles.message}>{message}</Text>
       )}
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Payment Method</Text>
-        <Text style={styles.text}>Bank Transfer, Cash, Mobile Payment</Text>
-      </View>
+      {student && (
+        <View style={styles.card}>
+          <Text style={styles.name}>
+            {student.name || student.full_name}
+          </Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Notice</Text>
-        <Text style={styles.text}>Online payment integration coming soon.</Text>
-      </View>
+          <Text>Student ID: {student.student_id}</Text>
+          <Text>Phone: {student.phone}</Text>
+          <Text>Email: {student.email}</Text>
+          <Text>Course: {student.course}</Text>
+
+          <Text style={styles.status}>
+            Payment: {student.payment_status || "Pending"}
+          </Text>
+
+          <Text>
+            Method: {student.payment_method || "Not Selected"}
+          </Text>
+
+          <Text>
+            Paid Date:{" "}
+            {student.paid_at
+              ? new Date(student.paid_at).toLocaleString()
+              : "Not paid yet"}
+          </Text>
+
+          <Pressable
+            style={styles.paidButton}
+            onPress={markPaid}
+          >
+            <Text style={styles.buttonText}>Mark Paid</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.pendingButton}
+            onPress={markPending}
+          >
+            <Text style={styles.buttonText}>Mark Pending</Text>
+          </Pressable>
+        </View>
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  page: {
+  container: {
     flex: 1,
-    backgroundColor: "#eef2ff",
-  },
-  header: {
-    backgroundColor: "#1e3a8a",
-    paddingTop: 80,
-    paddingBottom: 40,
-    alignItems: "center",
-    position: "relative",
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    backgroundColor: "#f4f6fb",
+    padding: 20,
   },
   backButton: {
-    position: "absolute",
-    top: 20,
-    left: 20,
-    backgroundColor: "rgba(255,255,255,0.25)",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
+    marginBottom: 20,
   },
-  backButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
+  backText: {
+    color: "#2563eb",
     fontWeight: "bold",
   },
   title: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "bold",
-    color: "white",
-  },
-  subtitle: {
-    color: "white",
-    marginTop: 10,
-    fontSize: 16,
-  },
-  card: {
-    backgroundColor: "white",
-    margin: 15,
-    padding: 20,
-    borderRadius: 15,
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#1e3a8a",
-    marginBottom: 10,
-  },
-  amount: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#16a34a",
-  },
-  text: {
-    fontSize: 16,
-    color: "#475569",
-    marginBottom: 6,
-  },
-  status: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#16a34a",
-    marginBottom: 10,
+    marginBottom: 20,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#cbd5e1",
+    borderColor: "#ccc",
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 14,
-    fontSize: 16,
-    marginBottom: 14,
+    marginBottom: 12,
   },
   searchButton: {
-    backgroundColor: "#facc15",
-    padding: 15,
-    borderRadius: 30,
+    backgroundColor: "#2563eb",
+    padding: 14,
+    borderRadius: 10,
     alignItems: "center",
   },
-  searchButtonText: {
-    color: "#111827",
+  buttonText: {
+    color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
   },
   message: {
-    marginTop: 14,
-    textAlign: "center",
+    marginVertical: 15,
     fontWeight: "bold",
-    color: "#1e3a8a",
+  },
+  card: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 12,
+    marginTop: 20,
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 12,
+  },
+  status: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 12,
+  },
+  paidButton: {
+    backgroundColor: "green",
+    padding: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  pendingButton: {
+    backgroundColor: "orange",
+    padding: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
   },
 });
