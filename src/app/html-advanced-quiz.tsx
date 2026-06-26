@@ -4,33 +4,58 @@ import { ScrollView, Text, TouchableOpacity, StyleSheet, View } from "react-nati
 
 const questions = [
   {
-    q: "What does HTML stand for?",
-    options: ["HyperText Markup Language", "HighText Machine Language", "Home Tool Markup Language"],
-    answer: "HyperText Markup Language",
+    q: "Which HTML tag is used to define navigation links?",
+    options: ["<nav>", "<section>", "<article>"],
+    answer: "<nav>",
   },
   {
-    q: "Which tag is used for the biggest heading?",
-    options: ["<h6>", "<h1>", "<p>"],
-    answer: "<h1>",
+    q: "Which HTML element is best for independent content like a blog post?",
+    options: ["<article>", "<span>", "<br>"],
+    answer: "<article>",
   },
   {
-    q: "Which tag is used to create a link?",
-    options: ["<a>", "<img>", "<table>"],
-    answer: "<a>",
+    q: "Which input type is used for email validation?",
+    options: ['type="text"', 'type="email"', 'type="password"'],
+    answer: 'type="email"',
   },
   {
-    q: "Which attribute gives image description?",
-    options: ["src", "alt", "href"],
-    answer: "alt",
+    q: "Which attribute makes an input field required?",
+    options: ["required", "placeholder", "readonly"],
+    answer: "required",
   },
   {
-    q: "Which tag is used for a form?",
-    options: ["<form>", "<footer>", "<section>"],
-    answer: "<form>",
+    q: "Which tag is used to group form fields together?",
+    options: ["<fieldset>", "<header>", "<main>"],
+    answer: "<fieldset>",
+  },
+  {
+    q: "Which tag is used to add a caption to a table?",
+    options: ["<caption>", "<label>", "<legend>"],
+    answer: "<caption>",
+  },
+  {
+    q: "Which element improves accessibility by connecting text to an input?",
+    options: ["<label>", "<div>", "<strong>"],
+    answer: "<label>",
+  },
+  {
+    q: "Which attribute opens a link in a new tab?",
+    options: ['target="_blank"', 'href="_blank"', 'open="new"'],
+    answer: 'target="_blank"',
+  },
+  {
+    q: "Which tag represents the main content of a page?",
+    options: ["<main>", "<aside>", "<footer>"],
+    answer: "<main>",
+  },
+  {
+    q: "Which HTML feature helps search engines understand page structure?",
+    options: ["Semantic HTML", "Random divs", "Inline colors only"],
+    answer: "Semantic HTML",
   },
 ];
 
-export default function HTMLQuiz() {
+export default function HTMLAdvancedQuiz() {
   const [answers, setAnswers] = useState<any>({});
   const [message, setMessage] = useState("");
 
@@ -44,12 +69,15 @@ export default function HTMLQuiz() {
     const percent = Math.round((score / questions.length) * 100);
 
     if (percent >= 70) {
-      setMessage(`✅ Passed: ${percent}%`);
+      setMessage(`✅ Passed Advanced HTML Quiz: ${percent}%`);
       setTimeout(() => {
-        router.push("/html-advanced-certificate");
+        router.push({
+          pathname: "/html-advanced-certificate",
+          params: { score: String(percent) },
+        });
       }, 1200);
     } else {
-      setMessage(`❌ Not passed: ${percent}%. Please study again.`);
+      setMessage(`❌ Not passed: ${percent}%. Please review the advanced HTML lecture again.`);
     }
   }
 
@@ -59,7 +87,7 @@ export default function HTMLQuiz() {
         <Text style={styles.backText}>← Back to HTML Lecture</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>📝 HTML Fundamental Quiz</Text>
+      <Text style={styles.title}>🧠 Advanced HTML Quiz</Text>
       <Text style={styles.subtitle}>Choose the best answer. Result shows only after submit.</Text>
 
       {questions.map((item, index) => (
@@ -82,7 +110,7 @@ export default function HTMLQuiz() {
       ))}
 
       <TouchableOpacity style={styles.submitButton} onPress={submitQuiz}>
-        <Text style={styles.submitText}>Submit Quiz</Text>
+        <Text style={styles.submitText}>Submit Advanced Quiz</Text>
       </TouchableOpacity>
 
       {message ? <Text style={styles.message}>{message}</Text> : null}
