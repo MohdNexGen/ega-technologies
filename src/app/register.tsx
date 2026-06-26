@@ -99,14 +99,32 @@ export default function RegisterPage() {
     };
 
     const adminEmailData = {
-      email: "i.gennex2026@gmail.com",
+      email: email.trim(),
       to_email: "i.gennex2026@gmail.com",
+      name: fullName.trim(),
+      from_name: fullName.trim(),
+      student_name: fullName.trim(),
+      student_email: email.trim(),
+      phone: phone.trim(),
+      student_phone: phone.trim(),
+      course: "Full Web Development",
+      fee: `${fee} Birr`,
+      start_date: startDate,
       ...emailData,
     };
 
     const studentEmailData = {
       email: email.trim(),
       to_email: email.trim(),
+      name: fullName.trim(),
+      from_name: fullName.trim(),
+      student_name: fullName.trim(),
+      student_email: email.trim(),
+      phone: phone.trim(),
+      student_phone: phone.trim(),
+      course: "Full Web Development",
+      fee: `${fee} Birr`,
+      start_date: startDate,
       ...emailData,
     };
 
