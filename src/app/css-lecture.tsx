@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { ScrollView, Text, TouchableOpacity, StyleSheet, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, StyleSheet, View, Linking } from "react-native";
 
 export default function CssLecturePage() {
   return (
@@ -12,6 +12,25 @@ export default function CssLecturePage() {
       <Text style={styles.subtitle}>
         Learn CSS step by step. CSS controls colors, fonts, spacing, layout, responsive design, and animations.
       </Text>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>🧰 Required Software / Resources</Text>
+        <Text style={styles.cardText}>Before starting CSS, install these tools:</Text>
+
+        <TouchableOpacity style={styles.resourceButton} onPress={() => Linking.openURL("https://code.visualstudio.com/")}>
+          <Text style={styles.resourceButtonText}>⬇️ Download VS Code</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.resourceButton} onPress={() => Linking.openURL("https://www.google.com/chrome/")}>
+          <Text style={styles.resourceButtonText}>⬇️ Download Google Chrome</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.resourceButton} onPress={() => Linking.openURL("https://developer.mozilla.org/en-US/docs/Web/CSS")}>
+          <Text style={styles.resourceButtonText}>📘 Open CSS Documentation</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.cardText}>⚠️ Install VS Code and Chrome before continuing.</Text>
+      </View>
 
       {lessons.map((lesson, index) => (
         <View key={index} style={styles.card}>
@@ -48,5 +67,18 @@ const styles = StyleSheet.create({
   cardText: { fontSize: 16, color: "#333", lineHeight: 24, marginBottom: 10 },
   code: { backgroundColor: "#111827", color: "#d1fae5", padding: 12, borderRadius: 10, fontFamily: "monospace", lineHeight: 22 },
   button: { backgroundColor: "#003366", padding: 18, borderRadius: 12, alignItems: "center", marginVertical: 25 },
+  resourceButton: {
+    backgroundColor: "#003366",
+    padding: 14,
+    borderRadius: 10,
+    marginTop: 10,
+    alignItems: "center",
+  },
+  resourceButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
   buttonText: { color: "#fff", fontSize: 20, fontWeight: "bold" },
 });

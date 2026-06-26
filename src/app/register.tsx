@@ -11,10 +11,10 @@ import {
 import emailjs from "@emailjs/browser";
 import { supabase } from "../lib/supabase";
 
-const SERVICE_ID = "nexgen_gmail";
-const ADMIN_TEMPLATE_ID = "template_zvfw3qd";
-const STUDENT_TEMPLATE_ID = "template_rb2zrme";
-const PUBLIC_KEY = "H5xDt1e48EHqf_U4U";
+const SERVICE_ID = "service_kkkr0xj";
+const ADMIN_TEMPLATE_ID = "template_w01c7ku";
+const STUDENT_TEMPLATE_ID = "template_9se77eg";
+const PUBLIC_KEY = "eGuNf2PLEmedxzflY";
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
@@ -96,37 +96,52 @@ export default function RegisterPage() {
       student_course: "Full Web Development",
       course_fee: `${fee} ETB`,
       start_date: startDate,
-      to_email: email.trim(),
     };
 
-    try {
-      await emailjs.send(
-        SERVICE_ID,
-        ADMIN_TEMPLATE_ID,
-        emailData,
-        PUBLIC_KEY
-      );
+    const adminEmailData = {
+      email: "i.gennex2026@gmail.com",
+      to_email: "i.gennex2026@gmail.com",
+      ...emailData,
+    };
 
-      await emailjs.send(
-        SERVICE_ID,
-        STUDENT_TEMPLATE_ID,
-        emailData,
-        PUBLIC_KEY
-      );
+    const studentEmailData = {
+      email: email.trim(),
+      to_email: email.trim(),
+      ...emailData,
+    };
 
+    console.log("ADMIN TEMPLATE:", ADMIN_TEMPLATE_ID);
+    console.log("STUDENT TEMPLATE:", STUDENT_TEMPLATE_ID);
+
+    const emailResults = await Promise.allSettled([
+      emailjs.send(SERVICE_ID, ADMIN_TEMPLATE_ID, adminEmailData, PUBLIC_KEY),
+      emailjs.send(SERVICE_ID, STUDENT_TEMPLATE_ID, studentEmailData, PUBLIC_KEY),
+    ]);
+
+    const adminEmailOk = emailResults[0].status === "fulfilled";
+    const studentEmailOk = emailResults[1].status === "fulfilled";
+
+    if (adminEmailOk && studentEmailOk) {
       setMessage(
-        `✅ Registration Successful — Welcome ${fullName.trim()} to EGA Technologies`
+        `✅ Registration Successful — Admin and student emails sent for ${fullName.trim()}`
       );
+    } else {
+      const errors = emailResults
+        .map((result, index) => {
+          if (result.status === "fulfilled") return "";
+          const label = index === 0 ? "Admin email error" : "Student email error";
+          const reason: any = result.reason;
+          return label + ": " + (reason?.text || reason?.message || "Unknown email error");
+        })
+        .filter(Boolean)
+        .join(" | ");
 
-      setFullName("");
-      setPhone("");
-      setEmail("");
-    } catch (emailError: any) {
-      setMessage(
-        "✅ Registered, but email error: " +
-          (emailError?.text || emailError?.message || "Unknown email error")
-      );
+      setMessage("✅ Registered, but email issue: " + errors);
     }
+
+    setFullName("");
+    setPhone("");
+    setEmail("");
 
     setLoading(false);
   }

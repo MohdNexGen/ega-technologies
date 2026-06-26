@@ -8,9 +8,9 @@ export default function CoursesPage() {
       <Text style={styles.title}>📚 EGA Courses</Text>
       <Text style={styles.subtitle}>Choose a course to start learning.</Text>
 
-      <Link href="/courses/html-course" asChild><TouchableOpacity style={styles.card}><Text style={styles.icon}>🌐</Text><Text style={styles.cardTitle}>HTML Fundamentals</Text><Text style={styles.cardText}>Learn HTML structure, tags, forms, tables, links, images, and more.</Text></TouchableOpacity></Link>
-      <Link href="/courses/css-course" asChild><TouchableOpacity style={styles.card}><Text style={styles.icon}>🎨</Text><Text style={styles.cardTitle}>CSS Fundamentals</Text><Text style={styles.cardText}>Learn styling, layouts, Flexbox, Grid, animations, and responsive design.</Text></TouchableOpacity></Link>
-      <Link href="/courses/javascript-course" asChild><TouchableOpacity style={styles.card}><Text style={styles.icon}>⚡</Text><Text style={styles.cardTitle}>JavaScript Fundamentals</Text><Text style={styles.cardText}>Learn variables, functions, arrays, objects, DOM, events, and modern JavaScript.</Text></TouchableOpacity></Link>
+      <Link href="/html-lecture" asChild><TouchableOpacity style={styles.card}><Text style={styles.icon}>🌐</Text><Text style={styles.cardTitle}>HTML Fundamentals</Text><Text style={styles.cardText}>Learn HTML structure, tags, forms, tables, links, images, and more.</Text></TouchableOpacity></Link>
+      <Link href="/css-lecture" asChild><TouchableOpacity style={styles.card}><Text style={styles.icon}>🎨</Text><Text style={styles.cardTitle}>CSS Fundamentals</Text><Text style={styles.cardText}>Learn styling, layouts, Flexbox, Grid, animations, and responsive design.</Text></TouchableOpacity></Link>
+      <Link href="/javascript-lecture" asChild><TouchableOpacity style={styles.card}><Text style={styles.icon}>⚡</Text><Text style={styles.cardTitle}>JavaScript Fundamentals</Text><Text style={styles.cardText}>Learn variables, functions, arrays, objects, DOM, events, and modern JavaScript.</Text></TouchableOpacity></Link>
     </ScrollView>
   );
 }
