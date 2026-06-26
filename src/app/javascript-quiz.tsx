@@ -28,40 +28,86 @@ const questions = [
 
 export default function JavaScriptQuizPage() {
   const [studentId, setStudentId] = useState("");
+  const [phone, setPhone] = useState("");
   const [answers, setAnswers] = useState<any>({});
   const [score, setScore] = useState<number | null>(null);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function submitQuiz() {
-    if (!studentId.trim()) {
-      setMessage("⚠️ Enter Student ID before sending quiz.");
+    if (loading) return;
+
+    if (!studentId.trim() || !phone.trim()) {
+      setMessage("⚠️ Enter Student ID and Phone Number first.");
       return;
     }
+
+    if (Object.keys(answers).length !== questions.length) {
+      setMessage("⚠️ Please answer all questions before sending quiz.");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("Saving JavaScript quiz result...");
 
     let correct = 0;
     questions.forEach((item, index) => {
       if (answers[index] === item.answer) correct++;
     });
 
-    const percent = Math.round((correct / questions.length) * 100);
-    const passed = percent >= 70;
-    setScore(percent);
+    const finalScore = Math.round((correct / questions.length) * 100);
+    const completed = finalScore >= 70;
 
-    const { error } = await supabase
+    const { data: student, error: findError } = await supabase
       .from("students")
-      .update({ js_certificate_status: passed ? "Ready" : "Not Ready" })
-      .eq("student_id", studentId.trim());
+      .select("*")
+      .eq("student_id", studentId.trim())
+      .maybeSingle();
 
-    if (error) {
-      setMessage("❌ Supabase error: " + error.message);
+    if (findError) {
+      setMessage("❌ Supabase error: " + findError.message);
+      setLoading(false);
       return;
     }
 
+    if (!student) {
+      setMessage("❌ Student not found.");
+      setLoading(false);
+      return;
+    }
+
+    const cleanTypedPhone = phone.replace(/\D/g, "");
+    const cleanSavedPhone = String(student.phone || "").replace(/\D/g, "");
+
+    if (cleanTypedPhone !== cleanSavedPhone) {
+      setMessage("❌ Phone number does not match this Student ID.");
+      setLoading(false);
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from("students")
+      .update({
+        js_completed: completed,
+        js_certificate_status: completed ? "Ready" : "Not Ready",
+        js_quiz_score: finalScore,
+      })
+      .eq("student_id", studentId.trim());
+
+    if (updateError) {
+      setMessage("❌ JavaScript quiz result not saved: " + updateError.message);
+      setLoading(false);
+      return;
+    }
+
+    setScore(finalScore);
     setMessage(
-      passed
+      completed
         ? "🎓 Passed! JavaScript Certificate unlocked and saved successfully."
-        : "✅ Quiz saved. Pass with 70% to unlock JavaScript Certificate."
+        : "✅ JavaScript quiz result saved. Pass with 70% to unlock JavaScript certificate."
     );
+
+    setLoading(false);
   }
 
   return (
@@ -71,13 +117,23 @@ export default function JavaScriptQuizPage() {
       </TouchableOpacity>
 
       <Text style={styles.title}>⚡ JavaScript Quiz</Text>
-      <Text style={styles.subtitle}>Answer all questions, then send quiz.</Text>
+      <Text style={styles.subtitle}>
+        Enter your Student ID and Phone Number so your JavaScript result can save to Supabase.
+      </Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Enter Student ID"
+        placeholder="Student ID"
         value={studentId}
         onChangeText={setStudentId}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad"
       />
 
       {questions.map((item, index) => (
@@ -96,8 +152,12 @@ export default function JavaScriptQuizPage() {
         </View>
       ))}
 
-      <TouchableOpacity style={styles.button} onPress={submitQuiz}>
-        <Text style={styles.buttonText}>Send JavaScript Quiz</Text>
+      <TouchableOpacity
+        style={[styles.button, loading && styles.disabledButton]}
+        onPress={submitQuiz}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>{loading ? "Saving..." : "Send JavaScript Quiz"}</Text>
       </TouchableOpacity>
 
       {score !== null && <Text style={styles.score}>Score: {score}%</Text>}
@@ -121,13 +181,14 @@ const styles = StyleSheet.create({
   back: { marginTop: 35, marginBottom: 20, color: "#003366", fontSize: 18, fontWeight: "bold" },
   title: { fontSize: 34, fontWeight: "bold", color: "#003366", textAlign: "center", marginBottom: 10 },
   subtitle: { fontSize: 18, color: "#555", textAlign: "center", marginBottom: 25 },
-  input: { backgroundColor: "#fff", borderWidth: 1, borderColor: "#ddd", borderRadius: 10, padding: 15, fontSize: 18, marginBottom: 20 },
+  input: { backgroundColor: "#fff", borderWidth: 1, borderColor: "#ddd", borderRadius: 10, padding: 15, fontSize: 18, marginBottom: 15 },
   questionBox: { backgroundColor: "#fff", padding: 18, borderRadius: 12, marginBottom: 20 },
   question: { fontSize: 20, fontWeight: "bold", color: "#003366", marginBottom: 12 },
   option: { backgroundColor: "#eef3f8", padding: 14, borderRadius: 10, marginBottom: 10 },
   selectedOption: { backgroundColor: "#d4af37" },
   optionText: { fontSize: 17 },
   button: { backgroundColor: "#003366", padding: 18, borderRadius: 12, alignItems: "center", marginTop: 20 },
+  disabledButton: { backgroundColor: "#888" },
   buttonText: { color: "#fff", fontSize: 20, fontWeight: "bold" },
   score: { textAlign: "center", fontSize: 30, fontWeight: "bold", color: "#003366", marginTop: 25 },
   message: { textAlign: "center", fontSize: 20, fontWeight: "bold", marginTop: 20 },
