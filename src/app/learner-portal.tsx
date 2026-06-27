@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
   ScrollView,
@@ -25,7 +25,7 @@ export default function LearnerPortal() {
     if (!student) return 0;
 
     return (
-      (student.html_certificate_status === "Ready" ? 33 : 0) +
+      ((student.html_certificate_status === "Ready" || student.html_completed === true || student.certificate_status === "Ready") ? 33 : 0) +
       (student.css_certificate_status === "Ready" ? 33 : 0) +
       (student.js_certificate_status === "Ready" ? 34 : 0)
     );
@@ -147,7 +147,7 @@ export default function LearnerPortal() {
 
             <Text style={styles.info}>
               HTML Certificate:{" "}
-              {student.html_certificate_status === "Ready"
+              {(student.html_certificate_status === "Ready" || student.html_completed === true || student.certificate_status === "Ready")
                 ? "✅ Ready"
                 : "❌ Not Ready"}
             </Text>
@@ -184,7 +184,7 @@ export default function LearnerPortal() {
             <Text style={styles.cardTitle}>🏆 Student Achievements</Text>
 
             <Text style={styles.info}>
-              {student.html_certificate_status === "Ready" ? "⭐ HTML Master" : "🔒 HTML Master"}
+              {(student.html_certificate_status === "Ready" || student.html_completed === true || student.certificate_status === "Ready") ? "⭐ HTML Master" : "🔒 HTML Master"}
             </Text>
 
             <Text style={styles.info}>
@@ -196,7 +196,7 @@ export default function LearnerPortal() {
             </Text>
 
             <Text style={styles.info}>
-              {student.html_certificate_status === "Ready" &&
+              {(student.html_certificate_status === "Ready" || student.html_completed === true || student.certificate_status === "Ready") &&
               student.css_certificate_status === "Ready" &&
               student.js_certificate_status === "Ready"
                 ? "🎓 Full Web Developer"
@@ -205,7 +205,7 @@ export default function LearnerPortal() {
           </View>
 
           <TouchableOpacity style={styles.button} onPress={() => router.push("/master-certificate")}>
-            <Text style={styles.buttonText}>🎓 View Master Certificate</Text>
+            <Text style={styles.buttonText}>🎓 View Certificate</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.logoutButton} onPress={logout}>

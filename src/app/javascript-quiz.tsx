@@ -90,7 +90,7 @@ export default function JavaScriptQuizPage() {
       .update({
         js_completed: completed,
         js_certificate_status: completed ? "Ready" : "Not Ready",
-        js_quiz_score: finalScore,
+        js_score: finalScore,
       })
       .eq("student_id", studentId.trim());
 

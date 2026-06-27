@@ -10,6 +10,12 @@ import {
 import { router } from "expo-router";
 import { supabase } from "../lib/supabase";
 
+function printCertificate() {
+  if (typeof window !== "undefined") {
+    window.print();
+  }
+}
+
 export default function CertificatePage() {
   const [studentId, setStudentId] = useState("");
   const [student, setStudent] = useState<any>(null);
@@ -93,6 +99,10 @@ export default function CertificatePage() {
           </Text>
         </View>
       )}
+    
+      <TouchableOpacity style={styles.printButton} onPress={printCertificate}>
+        <Text style={styles.printButtonText}>📥 Download / Print Certificate</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -174,5 +184,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#003366",
     marginVertical: 10,
+  },
+
+  printButton: {
+    backgroundColor: "#0a66c2",
+    padding: 16,
+    borderRadius: 14,
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  printButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "900",
   },
 });

@@ -10,6 +10,12 @@ import {
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 
+function printCertificate() {
+  if (typeof window !== "undefined") {
+    window.print();
+  }
+}
+
 export default function CSSCertificatePage() {
   const [studentId, setStudentId] = useState("");
   const [student, setStudent] = useState<any>(null);
@@ -89,6 +95,10 @@ export default function CSSCertificatePage() {
           <Text style={styles.smallText}>Certificate Status: Ready</Text>
         </View>
       )}
+    
+      <TouchableOpacity style={styles.printButton} onPress={printCertificate}>
+        <Text style={styles.printButtonText}>📥 Download / Print Certificate</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -173,5 +183,19 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: "#555",
+  },
+
+  printButton: {
+    backgroundColor: "#0a66c2",
+    padding: 16,
+    borderRadius: 14,
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  printButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "900",
   },
 });

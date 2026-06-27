@@ -3,6 +3,12 @@ import { ScrollView, Text, TextInput, TouchableOpacity, StyleSheet, View } from 
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 
+function printCertificate() {
+  if (typeof window !== "undefined") {
+    window.print();
+  }
+}
+
 export default function MasterCertificate() {
   const [studentId, setStudentId] = useState("");
   const [student, setStudent] = useState<any>(null);
@@ -34,9 +40,9 @@ export default function MasterCertificate() {
     }
 
     const completed =
-      data.html_certificate_status === "Ready" &&
-      data.css_certificate_status === "Ready" &&
-      data.js_certificate_status === "Ready";
+      (data.html_certificate_status === "Ready" || data.html_completed === true || data.certificate_status === "Ready") &&
+      (data.css_certificate_status === "Ready" || data.css_completed === true) &&
+      (data.js_certificate_status === "Ready" || data.js_completed === true);
 
     if (!completed) {
       setMessage("🔒 Master Certificate locked. Complete HTML, CSS, and JavaScript certificates first.");
@@ -106,6 +112,10 @@ export default function MasterCertificate() {
           </View>
         </View>
       )}
+    
+      <TouchableOpacity style={styles.printButton} onPress={printCertificate}>
+        <Text style={styles.printButtonText}>📥 Download / Print Certificate</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -139,4 +149,18 @@ const styles = StyleSheet.create({
   signatureBox: { marginTop: 35, alignItems: "center" },
   signatureLine: { fontSize: 18, color: "#333" },
   signature: { fontSize: 15, color: "#333", marginTop: 5 },
+
+  printButton: {
+    backgroundColor: "#0a66c2",
+    padding: 16,
+    borderRadius: 14,
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  printButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "900",
+  },
 });

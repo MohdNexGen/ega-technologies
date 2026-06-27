@@ -141,7 +141,7 @@ export default function RegisterPage() {
 
     if (adminEmailOk && studentEmailOk) {
       setMessage(
-        `✅ Registration Successful — Admin and student emails sent for ${fullName.trim()}`
+        `✅ Registration Successful — Admin and student emails sent for ${fullName.trim()}\n\nStudent ID: ${studentId}\nPhone: ${phone.trim()}\n\nUse this Student ID and Phone to login to Learner Portal.`
       );
     } else {
       const errors = emailResults

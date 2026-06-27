@@ -10,6 +10,12 @@ import {
 } from "react-native";
 import { supabase } from "../lib/supabase";
 
+function printCertificate() {
+  if (typeof window !== "undefined") {
+    window.print();
+  }
+}
+
 export default function JavaScriptCertificatePage() {
   const [studentId, setStudentId] = useState("");
   const [student, setStudent] = useState<any>(null);
@@ -83,6 +89,10 @@ export default function JavaScriptCertificatePage() {
           <Text style={styles.smallText}>Certificate Status: Ready</Text>
         </View>
       )}
+    
+      <TouchableOpacity style={styles.printButton} onPress={printCertificate}>
+        <Text style={styles.printButtonText}>📥 Download / Print Certificate</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -102,4 +112,18 @@ const styles = StyleSheet.create({
   name: { fontSize: 40, fontWeight: "bold", color: "#b8860b", marginBottom: 25, textAlign: "center" },
   course: { fontSize: 30, fontWeight: "bold", color: "#003366", marginBottom: 25, textAlign: "center" },
   smallText: { marginTop: 10, fontSize: 16, color: "#555" },
+
+  printButton: {
+    backgroundColor: "#0a66c2",
+    padding: 16,
+    borderRadius: 14,
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  printButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "900",
+  },
 });

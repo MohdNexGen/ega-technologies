@@ -26,7 +26,7 @@ export default function HomeScreen() {
         <Text style={styles.cardText}>HTML, CSS, JavaScript, React</Text>
       </Pressable>
 
-      <Pressable style={styles.card} onPress={() => router.push("/portal")}>
+      <Pressable style={styles.card} onPress={() => router.push("/learner-portal")}>
         <Text style={styles.cardTitle}>🎓 Learner Portal</Text>
         <Text style={styles.cardText}>Login, quiz, progress, certificate</Text>
       </Pressable>
