@@ -94,6 +94,16 @@ export default function LearnerPortal() {
     (q) => q.quiz_name === "HTML Quiz" && q.passed === true
   );
 
+  const cssPassed = quizResults.some(
+    (q) => q.quiz_name === "CSS Quiz" && q.passed === true
+  );
+
+  const jsPassed = quizResults.some(
+    (q) => q.quiz_name === "JavaScript Quiz" && q.passed === true
+  );
+
+  const fullProgramPassed = htmlPassed && cssPassed && jsPassed;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Link href="/" style={styles.back}>← Back to Home</Link>
@@ -229,6 +239,29 @@ export default function LearnerPortal() {
             ) : (
               <Text style={styles.text}>
                 🔒 Certificate locked until full payment is confirmed.
+              </Text>
+            )}
+          </View>
+
+
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>🏆 Full Web Development Certificate</Text>
+
+            {fullProgramPassed ? (
+              <>
+                <Text style={styles.successText}>
+                  🎉 Congratulations! Full Web Development Certificate Ready ✅
+                </Text>
+
+                <Link href="/full-certificate" asChild>
+                  <TouchableOpacity style={styles.startButton}>
+                    <Text style={styles.buttonText}>View Final Certificate</Text>
+                  </TouchableOpacity>
+                </Link>
+              </>
+            ) : (
+              <Text style={styles.text}>
+                🔒 Final certificate unlocks after passing HTML, CSS, and JavaScript quizzes.
               </Text>
             )}
           </View>
