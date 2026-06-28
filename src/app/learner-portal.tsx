@@ -1,4 +1,3 @@
-
 import { Link } from "expo-router";
 import { useState } from "react";
 import {
@@ -15,6 +14,7 @@ export default function LearnerPortal() {
   const [studentId, setStudentId] = useState("");
   const [phone, setPhone] = useState("");
   const [student, setStudent] = useState<any>(null);
+  const [quizResults, setQuizResults] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -28,6 +28,7 @@ export default function LearnerPortal() {
     setLoading(true);
     setMessage("Checking login...");
     setStudent(null);
+    setQuizResults([]);
 
     if (!studentId.trim() || !phone.trim()) {
       setMessage("⚠️ Please enter Student ID and Phone Number");
@@ -59,19 +60,39 @@ export default function LearnerPortal() {
       return;
     }
 
+    const { data: results, error: quizError } = await supabase
+      .from("quiz_results")
+      .select("*")
+      .eq("student_id", data.student_id)
+      .order("created_at", { ascending: false });
+
+    if (quizError) {
+      setMessage("⚠️ Login successful, but quiz results could not load: " + quizError.message);
+    } else {
+      setMessage("✅ Login successful");
+    }
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("student_id", data.student_id);
+    }
+
     setStudent(data);
-    setMessage("✅ Login successful");
+    setQuizResults(results || []);
     setLoading(false);
   }
 
   function logout() {
     setStudent(null);
+    setQuizResults([]);
     setStudentId("");
     setPhone("");
     setMessage("");
   }
 
   const isPaid = student?.payment_status === "Paid";
+  const htmlPassed = quizResults.some(
+    (q) => q.quiz_name === "HTML Quiz" && q.passed === true
+  );
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -148,6 +169,18 @@ export default function LearnerPortal() {
                     <Text style={styles.buttonText}>Start HTML Course</Text>
                   </TouchableOpacity>
                 </Link>
+
+                <Link href="/css-lecture" asChild>
+                  <TouchableOpacity style={styles.startButton}>
+                    <Text style={styles.buttonText}>Start CSS Course</Text>
+                  </TouchableOpacity>
+                </Link>
+
+                <Link href="/javascript-lecture" asChild>
+                  <TouchableOpacity style={styles.startButton}>
+                    <Text style={styles.buttonText}>Start JavaScript Course</Text>
+                  </TouchableOpacity>
+                </Link>
               </View>
             ) : (
               <View style={styles.warningBox}>
@@ -159,10 +192,39 @@ export default function LearnerPortal() {
           </View>
 
           <View style={styles.card}>
+            <Text style={styles.cardTitle}>📊 Quiz Results</Text>
+
+            {quizResults.length === 0 ? (
+              <Text style={styles.text}>No quiz results yet.</Text>
+            ) : (
+              quizResults.map((q, index) => (
+                <View key={index} style={styles.quizRow}>
+                  <Text style={styles.text}>
+                    {q.quiz_name || "Quiz"}: {q.percentage ?? q.score}% {q.passed ? "✅ Passed" : "❌ Failed"}
+                  </Text>
+                </View>
+              ))
+            )}
+          </View>
+
+          <View style={styles.card}>
             <Text style={styles.cardTitle}>Certificate Status</Text>
-            {isPaid ? (
+
+            {isPaid && htmlPassed ? (
+              <>
+                <Text style={styles.successText}>
+                  🎓 HTML Certificate Ready ✅
+                </Text>
+
+                <Link href="/html-certificate" asChild>
+                  <TouchableOpacity style={styles.startButton}>
+                    <Text style={styles.buttonText}>Open HTML Certificate</Text>
+                  </TouchableOpacity>
+                </Link>
+              </>
+            ) : isPaid ? (
               <Text style={styles.text}>
-                🔓 Certificate will unlock after course completion and passing the quiz.
+                🔓 Certificate will unlock after passing the HTML quiz.
               </Text>
             ) : (
               <Text style={styles.text}>
@@ -193,6 +255,7 @@ const styles = StyleSheet.create({
   buttonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
   message: { marginTop: 15, fontSize: 17, textAlign: "center", color: "#003366", fontWeight: "bold" },
   text: { fontSize: 18, color: "#334155", marginBottom: 10 },
+  quizRow: { borderBottomWidth: 1, borderBottomColor: "#e5e7eb", paddingVertical: 8 },
   paidBox: { backgroundColor: "#dcfce7", padding: 18, borderRadius: 12, marginBottom: 15, alignItems: "center" },
   paidText: { color: "#166534", fontSize: 28, fontWeight: "bold" },
   pendingBox: { backgroundColor: "#fef3c7", padding: 18, borderRadius: 12, marginBottom: 15, alignItems: "center" },

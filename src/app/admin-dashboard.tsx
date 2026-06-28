@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, StyleSheet, View } from "react-native";
+import { ScrollView, Text, StyleSheet, View, Pressable } from "react-native";
 import { supabase } from "../lib/supabase";
 
 export default function AdminDashboard() {
@@ -29,14 +29,10 @@ export default function AdminDashboard() {
 
     const students = data || [];
 
-    const fees = students.reduce((sum, s) => sum + Number(s.fee || 0), 0);
-    const collected = students.reduce((sum, s) => sum + Number(s.paid_amount || 0), 0);
-    const outstanding = students.reduce((sum, s) => sum + Number(s.remaining_amount || 0), 0);
-
     setTotalStudents(students.length);
-    setTotalFees(fees);
-    setTotalCollected(collected);
-    setTotalOutstanding(outstanding);
+    setTotalFees(students.reduce((sum, s) => sum + Number(s.fee || 0), 0));
+    setTotalCollected(students.reduce((sum, s) => sum + Number(s.paid_amount || 0), 0));
+    setTotalOutstanding(students.reduce((sum, s) => sum + Number(s.remaining_amount || 0), 0));
     setLoading(false);
   }
 
@@ -64,16 +60,22 @@ export default function AdminDashboard() {
         )}
       </View>
 
-      <Link href="/admin-students" style={styles.linkButton}>
-        📋 Student List
+      <Link href="/admin-students" asChild>
+        <Pressable style={styles.linkButton}>
+          <Text style={styles.linkText}>📋 Student List / Payments</Text>
+        </Pressable>
       </Link>
 
-      <Link href="/fee-settings" style={styles.linkButton}>
-        ⚙️ Fee Settings
+      <Link href="/fee-settings" asChild>
+        <Pressable style={styles.linkButton}>
+          <Text style={styles.linkText}>⚙️ Fee Settings</Text>
+        </Pressable>
       </Link>
 
-      <Link href="/" style={styles.backButton}>
-        ← Back to Home
+      <Link href="/" asChild>
+        <Pressable style={styles.backButton}>
+          <Text style={styles.backText}>← Back to Home</Text>
+        </Pressable>
       </Link>
     </ScrollView>
   );
@@ -128,19 +130,23 @@ const styles = StyleSheet.create({
   },
   linkButton: {
     backgroundColor: "#003366",
-    color: "#fff",
     padding: 18,
     borderRadius: 14,
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "bold",
+    alignItems: "center",
     marginBottom: 15,
   },
-  backButton: {
-    color: "#003366",
-    textAlign: "center",
+  linkText: {
+    color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
+  },
+  backButton: {
     marginTop: 20,
+    alignItems: "center",
+  },
+  backText: {
+    color: "#003366",
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });

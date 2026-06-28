@@ -98,8 +98,11 @@ export default function HTMLQuiz() {
     const { error } = await supabase.from("quiz_results").insert([
       {
         student_id: studentId,
+        quiz_name: "HTML Quiz",
         course: "HTML",
         score: finalScore,
+        total: questions.length,
+        percentage: finalScore,
         passed: passed,
       },
     ]);

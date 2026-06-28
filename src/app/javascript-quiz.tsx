@@ -100,6 +100,24 @@ export default function JavaScriptQuizPage() {
       return;
     }
 
+    const { error: quizError } = await supabase
+      .from("quiz_results")
+      .insert({
+        student_id: studentId.trim(),
+        quiz_name: "JavaScript Quiz",
+        course: "JavaScript",
+        score: finalScore,
+        total: questions.length,
+        percentage: finalScore,
+        passed: completed,
+      });
+
+    if (quizError) {
+      setMessage("❌ Quiz completed, but result was not saved: " + quizError.message);
+      setLoading(false);
+      return;
+    }
+
     setScore(finalScore);
     setMessage(
       completed
