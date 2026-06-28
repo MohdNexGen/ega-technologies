@@ -87,6 +87,23 @@ export default function RegisterPage() {
       return;
     }
 
+    const { error: transactionError } = await supabase.from("transactions").insert({
+      student_id: studentId,
+      student_name: fullName.trim(),
+      phone: phone.trim(),
+      email: email.trim(),
+      course: "Full Web Development",
+      amount: Number(fee),
+      status: "Pending",
+      type: "Registration Fee",
+    });
+
+    if (transactionError) {
+      setLoading(false);
+      setMessage("❌ Transaction error: " + transactionError.message);
+      return;
+    }
+
     const emailData = {
       full_name: fullName.trim(),
       student_name: fullName.trim(),

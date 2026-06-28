@@ -1,4 +1,5 @@
-import { Link, router } from "expo-router";
+
+import { Link } from "expo-router";
 import { useState } from "react";
 import {
   ScrollView,
@@ -21,27 +22,18 @@ export default function LearnerPortal() {
     return value.replace(/\D/g, "");
   }
 
-  function progressPercent() {
-    if (!student) return 0;
-
-    return (
-      ((student.html_certificate_status === "Ready" || student.html_completed === true || student.certificate_status === "Ready") ? 33 : 0) +
-      (student.css_certificate_status === "Ready" ? 33 : 0) +
-      (student.js_certificate_status === "Ready" ? 34 : 0)
-    );
-  }
-
   async function handleLogin() {
     if (loading) return;
-
-    if (!studentId.trim() || !phone.trim()) {
-      setMessage("⚠️ Enter Student ID and Phone Number");
-      return;
-    }
 
     setLoading(true);
     setMessage("Checking login...");
     setStudent(null);
+
+    if (!studentId.trim() || !phone.trim()) {
+      setMessage("⚠️ Please enter Student ID and Phone Number");
+      setLoading(false);
+      return;
+    }
 
     const { data, error } = await supabase
       .from("students")
@@ -49,25 +41,27 @@ export default function LearnerPortal() {
       .eq("student_id", studentId.trim())
       .maybeSingle();
 
-    setLoading(false);
-
     if (error) {
       setMessage("❌ Supabase error: " + error.message);
+      setLoading(false);
       return;
     }
 
     if (!data) {
       setMessage("❌ Student not found");
+      setLoading(false);
       return;
     }
 
     if (cleanPhone(data.phone || "") !== cleanPhone(phone)) {
       setMessage("❌ Phone number does not match");
+      setLoading(false);
       return;
     }
 
     setStudent(data);
     setMessage("✅ Login successful");
+    setLoading(false);
   }
 
   function logout() {
@@ -77,139 +71,108 @@ export default function LearnerPortal() {
     setMessage("");
   }
 
+  const isPaid = student?.payment_status === "Paid";
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Link href="/" asChild>
-        <TouchableOpacity>
-          <Text style={styles.back}>← Back to Home</Text>
-        </TouchableOpacity>
-      </Link>
+      <Link href="/" style={styles.back}>← Back to Home</Link>
 
       <Text style={styles.title}>🎓 Learner Portal</Text>
       <Text style={styles.subtitle}>
-        Login to view your payment, progress, and certificates.
+        Login to view payment, progress, quiz, and certificate status.
       </Text>
 
       {!student && (
         <View style={styles.card}>
+          <Text style={styles.cardTitle}>Student Login</Text>
+
           <TextInput
             style={styles.input}
-            placeholder="Enter Student ID"
+            placeholder="Student ID"
             value={studentId}
             onChangeText={setStudentId}
           />
 
           <TextInput
             style={styles.input}
-            placeholder="Enter Phone Number"
+            placeholder="Phone Number"
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.buttonText}>
               {loading ? "Checking..." : "Login"}
             </Text>
           </TouchableOpacity>
+
+          {message ? <Text style={styles.message}>{message}</Text> : null}
         </View>
       )}
-
-      {message ? <Text style={styles.message}>{message}</Text> : null}
 
       {student && (
         <>
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>👤 Student Information</Text>
-            <Text style={styles.info}>Name: {student.name}</Text>
-            <Text style={styles.info}>Student ID: {student.student_id}</Text>
-            <Text style={styles.info}>Email: {student.email}</Text>
-            <Text style={styles.info}>Phone: {student.phone}</Text>
-            <Text style={styles.info}>Course: {student.course}</Text>
-            <Text style={styles.info}>Language: {student.language}</Text>
+            <Text style={styles.cardTitle}>Student Information</Text>
+            <Text style={styles.text}>Name: {student.name}</Text>
+            <Text style={styles.text}>Student ID: {student.student_id}</Text>
+            <Text style={styles.text}>Email: {student.email}</Text>
+            <Text style={styles.text}>Phone: {student.phone}</Text>
+            <Text style={styles.text}>Course: {student.course}</Text>
+            <Text style={styles.text}>Language: {student.language}</Text>
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>💳 Payment Details</Text>
-            <Text style={styles.info}>
-              Payment Status: {student.payment_status || "Pending"}
-            </Text>
-            <Text style={styles.info}>
-              Payment Method: {student.payment_method || "Not Selected"}
-            </Text>
-            <Text style={styles.info}>
-              Payment Reference: {student.payment_reference || "Not Provided"}
-            </Text>
-            <Text style={styles.info}>Fee: {student.fee || "Contact EGA"}</Text>
-          </View>
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>📚 Course Progress</Text>
+            <Text style={styles.cardTitle}>Payment Status</Text>
 
-            <Text style={styles.info}>
-              HTML Certificate:{" "}
-              {(student.html_certificate_status === "Ready" || student.html_completed === true || student.certificate_status === "Ready")
-                ? "✅ Ready"
-                : "❌ Not Ready"}
-            </Text>
-
-            <Text style={styles.info}>
-              CSS Certificate:{" "}
-              {student.css_certificate_status === "Ready"
-                ? "✅ Ready"
-                : "❌ Not Ready"}
-            </Text>
-
-            <Text style={styles.info}>
-              JavaScript Certificate:{" "}
-              {student.js_certificate_status === "Ready"
-                ? "✅ Ready"
-                : "❌ Not Ready"}
-            </Text>
-
-            <Text style={styles.progressTitle}>Overall Progress</Text>
-
-            <View style={styles.progressBar}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${progressPercent()}%` },
-                ]}
-              />
+            <View style={isPaid ? styles.paidBox : styles.pendingBox}>
+              <Text style={isPaid ? styles.paidText : styles.pendingText}>
+                {isPaid ? "Paid" : "Pending"}
+              </Text>
             </View>
 
-            <Text style={styles.progressText}>{progressPercent()}%</Text>
+            <Text style={styles.text}>Method: {student.payment_method || "Not Selected"}</Text>
+            <Text style={styles.text}>Reference: {student.payment_reference || "Not Provided"}</Text>
+            <Text style={styles.text}>Paid Date: {student.paid_at || "Not Paid Yet"}</Text>
+            <Text style={styles.text}>Fee: {student.fee ? `${student.fee} Birr` : "Not Set"}</Text>
+
+            {isPaid ? (
+              <View style={styles.successBox}>
+                <Text style={styles.successText}>
+                  ✅ Payment confirmed. Lectures and quizzes are unlocked.
+                </Text>
+
+                <Link href="/html-lecture" asChild>
+                  <TouchableOpacity style={styles.startButton}>
+                    <Text style={styles.buttonText}>Start HTML Course</Text>
+                  </TouchableOpacity>
+                </Link>
+              </View>
+            ) : (
+              <View style={styles.warningBox}>
+                <Text style={styles.warningText}>
+                  ⚠️ Payment pending. Complete payment to unlock lectures, quizzes, and certificates.
+                </Text>
+              </View>
+            )}
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>🏆 Student Achievements</Text>
-
-            <Text style={styles.info}>
-              {(student.html_certificate_status === "Ready" || student.html_completed === true || student.certificate_status === "Ready") ? "⭐ HTML Master" : "🔒 HTML Master"}
-            </Text>
-
-            <Text style={styles.info}>
-              {student.css_certificate_status === "Ready" ? "⭐ CSS Master" : "🔒 CSS Master"}
-            </Text>
-
-            <Text style={styles.info}>
-              {student.js_certificate_status === "Ready" ? "⭐ JavaScript Master" : "🔒 JavaScript Master"}
-            </Text>
-
-            <Text style={styles.info}>
-              {(student.html_certificate_status === "Ready" || student.html_completed === true || student.certificate_status === "Ready") &&
-              student.css_certificate_status === "Ready" &&
-              student.js_certificate_status === "Ready"
-                ? "🎓 Full Web Developer"
-                : "🔒 Full Web Developer"}
-            </Text>
+            <Text style={styles.cardTitle}>Certificate Status</Text>
+            {isPaid ? (
+              <Text style={styles.text}>
+                🔓 Certificate will unlock after course completion and passing the quiz.
+              </Text>
+            ) : (
+              <Text style={styles.text}>
+                🔒 Certificate locked until full payment is confirmed.
+              </Text>
+            )}
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={() => router.push("/master-certificate")}>
-            <Text style={styles.buttonText}>🎓 View Certificate</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-            <Text style={styles.logoutText}>Logout</Text>
+            <Text style={styles.buttonText}>Logout</Text>
           </TouchableOpacity>
         </>
       )}
@@ -218,100 +181,26 @@ export default function LearnerPortal() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f4f6f9" },
-  content: { padding: 20, paddingBottom: 60 },
-  back: {
-    marginTop: 35,
-    marginBottom: 20,
-    color: "#003366",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "bold",
-    color: "#003366",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: "#555",
-    textAlign: "center",
-    marginBottom: 25,
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: 22,
-    borderRadius: 15,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#dbe3ec",
-  },
-  input: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    padding: 15,
-    fontSize: 18,
-    marginBottom: 15,
-  },
-  button: {
-    backgroundColor: "#003366",
-    padding: 18,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  buttonText: { color: "#fff", fontSize: 20, fontWeight: "bold" },
-  message: {
-    textAlign: "center",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  cardTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#003366",
-    marginBottom: 15,
-  },
-  info: {
-    fontSize: 18,
-    color: "#333",
-    marginBottom: 10,
-  },
-  progressTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 10,
-    color: "#003366",
-  },
-  progressBar: {
-    width: "100%",
-    height: 20,
-    backgroundColor: "#ddd",
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  progressFill: {
-    backgroundColor: "#28a745",
-    height: 20,
-    borderRadius: 10,
-  },
-  progressText: {
-    marginTop: 10,
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#003366",
-  },
-  logoutButton: {
-    backgroundColor: "#b00020",
-    padding: 18,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  logoutText: { color: "#fff", fontSize: 20, fontWeight: "bold" },
+  container: { flex: 1, backgroundColor: "#eef3ff" },
+  content: { padding: 20, paddingBottom: 50 },
+  back: { fontSize: 18, color: "#003366", fontWeight: "bold", marginBottom: 20 },
+  title: { fontSize: 36, fontWeight: "bold", color: "#003366", textAlign: "center" },
+  subtitle: { fontSize: 18, color: "#475569", textAlign: "center", marginBottom: 25 },
+  card: { backgroundColor: "#fff", padding: 22, borderRadius: 18, marginBottom: 22 },
+  cardTitle: { fontSize: 26, fontWeight: "bold", color: "#003366", marginBottom: 18 },
+  input: { backgroundColor: "#f8fafc", padding: 16, borderRadius: 12, marginBottom: 14, fontSize: 17, borderWidth: 1, borderColor: "#cbd5e1" },
+  loginButton: { backgroundColor: "#003366", padding: 16, borderRadius: 12, alignItems: "center" },
+  buttonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
+  message: { marginTop: 15, fontSize: 17, textAlign: "center", color: "#003366", fontWeight: "bold" },
+  text: { fontSize: 18, color: "#334155", marginBottom: 10 },
+  paidBox: { backgroundColor: "#dcfce7", padding: 18, borderRadius: 12, marginBottom: 15, alignItems: "center" },
+  paidText: { color: "#166534", fontSize: 28, fontWeight: "bold" },
+  pendingBox: { backgroundColor: "#fef3c7", padding: 18, borderRadius: 12, marginBottom: 15, alignItems: "center" },
+  pendingText: { color: "#92400e", fontSize: 28, fontWeight: "bold" },
+  successBox: { backgroundColor: "#ecfdf5", padding: 16, borderRadius: 12, marginTop: 15 },
+  successText: { color: "#166534", fontSize: 17, marginBottom: 15, fontWeight: "bold" },
+  warningBox: { backgroundColor: "#fff7ed", padding: 16, borderRadius: 12, marginTop: 15 },
+  warningText: { color: "#9a3412", fontSize: 17, fontWeight: "bold" },
+  startButton: { backgroundColor: "#16a34a", padding: 16, borderRadius: 12, alignItems: "center" },
+  logoutButton: { backgroundColor: "#b00020", padding: 16, borderRadius: 12, alignItems: "center" },
 });
