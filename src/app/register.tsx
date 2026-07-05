@@ -54,6 +54,19 @@ export default function RegisterPage() {
     return `EGA-2026-${random}`;
   }
 
+  function formatName(name: string) {
+    return name
+      .trim()
+      .split(" ")
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ");
+  }
+
+  function formatFee(value: string) {
+    return Number(value).toLocaleString() + " Birr";
+  }
+
   async function handleRegister() {
     if (loading) return;
 
@@ -66,12 +79,15 @@ export default function RegisterPage() {
     setMessage("Registering...");
 
     const studentId = generateStudentId();
+    const cleanName = formatName(fullName);
+    const cleanPhone = phone.trim();
+    const cleanEmail = email.trim();
 
     const { error } = await supabase.from("students").insert({
       student_id: studentId,
-      name: fullName.trim(),
-      phone: phone.trim(),
-      email: email.trim(),
+      name: cleanName,
+      phone: cleanPhone,
+      email: cleanEmail,
       language: "English",
       course: "Full Web Development",
       fee: Number(fee),
@@ -89,9 +105,9 @@ export default function RegisterPage() {
 
     const { error: transactionError } = await supabase.from("transactions").insert({
       student_id: studentId,
-      student_name: fullName.trim(),
-      phone: phone.trim(),
-      email: email.trim(),
+      student_name: cleanName,
+      phone: cleanPhone,
+      email: cleanEmail,
       course: "Full Web Development",
       amount: Number(fee),
       status: "Pending",
@@ -105,42 +121,44 @@ export default function RegisterPage() {
     }
 
     const emailData = {
-      full_name: fullName.trim(),
-      student_name: fullName.trim(),
-      student_email: email.trim(),
-      student_phone: phone.trim(),
+      full_name: cleanName,
+      student_name: cleanName,
+      student_email: cleanEmail,
+      student_phone: cleanPhone,
       student_id: studentId,
       student_course: "Full Web Development",
-      course_fee: `${fee} ETB`,
+      course_fee: formatFee(fee),
+      fee_text: formatFee(fee),
       start_date: startDate,
+      logo_url: "https://dummyimage.com/160x60/12306d/ffffff.png&text=EGA",
     };
 
     const adminEmailData = {
-      email: email.trim(),
+      email: cleanEmail,
       to_email: "i.gennex2026@gmail.com",
-      name: fullName.trim(),
-      from_name: fullName.trim(),
-      student_name: fullName.trim(),
-      student_email: email.trim(),
-      phone: phone.trim(),
-      student_phone: phone.trim(),
+      name: cleanName,
+      from_name: cleanName,
+      student_name: cleanName,
+      student_email: cleanEmail,
+      phone: cleanPhone,
+      student_phone: cleanPhone,
       course: "Full Web Development",
-      fee: `${fee} Birr`,
+      fee: formatFee(fee),
       start_date: startDate,
       ...emailData,
     };
 
     const studentEmailData = {
-      email: email.trim(),
-      to_email: email.trim(),
-      name: fullName.trim(),
-      from_name: fullName.trim(),
-      student_name: fullName.trim(),
-      student_email: email.trim(),
-      phone: phone.trim(),
-      student_phone: phone.trim(),
+      email: cleanEmail,
+      to_email: cleanEmail,
+      name: cleanName,
+      from_name: cleanName,
+      student_name: cleanName,
+      student_email: cleanEmail,
+      phone: cleanPhone,
+      student_phone: cleanPhone,
       course: "Full Web Development",
-      fee: `${fee} Birr`,
+      fee: formatFee(fee),
       start_date: startDate,
       ...emailData,
     };
@@ -158,7 +176,7 @@ export default function RegisterPage() {
 
     if (adminEmailOk && studentEmailOk) {
       setMessage(
-        `✅ Registration Successful — Admin and student emails sent for ${fullName.trim()}\n\nStudent ID: ${studentId}\nPhone: ${phone.trim()}\n\nUse this Student ID and Phone to login to Learner Portal.`
+        `✅ Registration Successful — Admin and student emails sent for ${cleanName}\n\nStudent ID: ${studentId}\nPhone: ${cleanPhone}\n\nUse this Student ID and Phone to login to Learner Portal.`
       );
     } else {
       const errors = emailResults
