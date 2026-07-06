@@ -1,12 +1,15 @@
 {
-  "name": "najashcollegeapp",
+  "name": "ega-college-app",
+  "description": "EGA Technologies learning app built with Expo Router and React Native for web and mobile.",
+  "type": "module",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@expo/metro": "^56.0.0",
     "@expo/ui": "~56.0.18",
     "@supabase/supabase-js": "^2.108.2",
-    "expo": "~56.0.12",
+    "expo": "^56.0.14",
     "expo-constants": "~56.0.18",
     "expo-device": "~56.0.4",
     "expo-font": "~56.0.7",
@@ -30,7 +33,14 @@
     "react-native-worklets": "0.8.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@types/react": "~19.2.2",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.4.0",
+    "globals": "^17.7.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
