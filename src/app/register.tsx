@@ -81,7 +81,38 @@ export default function RegisterPage() {
     const studentId = generateStudentId();
     const cleanName = formatName(fullName);
     const cleanPhone = phone.trim();
-    const cleanEmail = email.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    const { data: existingStudent, error: checkError } = await supabase
+      .from("students")
+      .select("student_id, name, phone, email")
+      .or(`phone.eq.${cleanPhone},email.eq.${cleanEmail}`)
+      .limit(1)
+      .maybeSingle();
+
+    if (checkError) {
+      setLoading(false);
+      setMessage("❌ Duplicate check error: " + checkError.message);
+      return;
+    }
+
+    if (existingStudent) {
+      setLoading(false);
+
+      if (existingStudent.phone === cleanPhone) {
+        setMessage(
+          `❌ This phone number is already registered.\n\nStudent: ${existingStudent.name}\nStudent ID: ${existingStudent.student_id}\n\nPlease login to Learner Portal instead.`
+        );
+        return;
+      }
+
+      if (String(existingStudent.email).toLowerCase() === cleanEmail) {
+        setMessage(
+          `❌ This email address is already registered.\n\nStudent: ${existingStudent.name}\nStudent ID: ${existingStudent.student_id}\n\nPlease login to Learner Portal instead.`
+        );
+        return;
+      }
+    }
 
     const { error } = await supabase.from("students").insert({
       student_id: studentId,
