@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ScrollView,
   Text,
@@ -41,7 +41,20 @@ export default function CertificatePage() {
       return;
     }
 
-    if (!data.html_completed) {
+    const { data: quizData, error: quizError } = await supabase
+      .from("quiz_results")
+      .select("*")
+      .eq("student_id", studentId.trim())
+      .eq("quiz_name", "HTML Quiz")
+      .eq("passed", true)
+      .limit(1);
+
+    if (quizError) {
+      setMessage("❌ " + quizError.message);
+      return;
+    }
+
+    if (!quizData || quizData.length === 0) {
       setMessage("❌ Complete and pass the HTML quiz first.");
       return;
     }
