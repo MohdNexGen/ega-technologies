@@ -78,10 +78,6 @@ export default function PaymentsScreen() {
         <Pressable style={styles.navButton} onPress={() => router.push("/")}>
           <Text style={styles.navText}>← Home</Text>
         </Pressable>
-
-        <Pressable style={styles.navButton} onPress={() => router.push("/admin-dashboard")}>
-          <Text style={styles.navText}>Admin</Text>
-        </Pressable>
       </View>
 
       <View style={styles.header}>

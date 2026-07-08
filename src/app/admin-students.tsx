@@ -10,7 +10,48 @@ import {
 } from "react-native";
 import { supabase } from "../lib/supabase";
 
+const ADMIN_PASSWORD = "EGAADMIN2026";
+
 export default function AdminStudents() {
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminLoggedIn, setAdminLoggedIn] = useState(false);
+  const [adminMessage, setAdminMessage] = useState("");
+
+  function checkAdminPassword() {
+    if (adminPassword === ADMIN_PASSWORD) {
+      setAdminLoggedIn(true);
+      setAdminMessage("");
+    } else {
+      setAdminMessage("❌ Wrong admin password");
+    }
+  }
+
+  if (!adminLoggedIn) {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <Text style={styles.title}>🔐 Admin Login</Text>
+        <Text style={styles.subtitle}>Only EGA admin can access student payments.</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Enter admin password"
+          secureTextEntry
+          value={adminPassword}
+          onChangeText={setAdminPassword}
+        />
+
+        <TouchableOpacity style={styles.paidButton} onPress={checkAdminPassword}>
+          <Text style={styles.buttonText}>Login as Admin</Text>
+        </TouchableOpacity>
+
+        {adminMessage ? <Text style={styles.message}>{adminMessage}</Text> : null}
+
+        <Link href="/" style={styles.backButton}>
+          ← Back to Home
+        </Link>
+      </ScrollView>
+    );
+  }
   const [students, setStudents] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [partialAmounts, setPartialAmounts] = useState<any>({});

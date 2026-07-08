@@ -10,7 +10,13 @@ import {
 } from "react-native";
 import { supabase } from "../lib/supabase";
 
+const ADMIN_PASSWORD = "EGAADMIN2026";
+
 export default function FeeSettings() {
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminLoggedIn, setAdminLoggedIn] = useState(false);
+  const [adminMessage, setAdminMessage] = useState("");
+
   const [fee, setFee] = useState("3000");
   const [startDate, setStartDate] = useState("Coming Soon");
   const [message, setMessage] = useState("");
@@ -19,6 +25,15 @@ export default function FeeSettings() {
   useEffect(() => {
     loadSettings();
   }, []);
+
+  function checkAdminPassword() {
+    if (adminPassword === ADMIN_PASSWORD) {
+      setAdminLoggedIn(true);
+      setAdminMessage("");
+    } else {
+      setAdminMessage("❌ Wrong admin password");
+    }
+  }
 
   async function loadSettings() {
     setMessage("Loading settings...");
@@ -76,6 +91,41 @@ export default function FeeSettings() {
     setMessage("✅ Settings saved successfully");
   }
 
+  if (!adminLoggedIn) {
+    return (
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.icon}>🔐</Text>
+          <Text style={styles.title}>Admin Login</Text>
+          <Text style={styles.subtitle}>Only EGA admin can change fee settings</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.label}>Admin Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter admin password"
+            secureTextEntry
+            value={adminPassword}
+            onChangeText={setAdminPassword}
+          />
+
+          <TouchableOpacity style={styles.adminButton} onPress={checkAdminPassword}>
+            <Text style={styles.buttonText}>Login as Admin</Text>
+          </TouchableOpacity>
+
+          {adminMessage ? <Text style={styles.errorMessage}>{adminMessage}</Text> : null}
+
+          <Link href="/admin-dashboard" asChild>
+            <TouchableOpacity style={styles.backButton}>
+              <Text style={styles.backText}>← Back to Admin Dashboard</Text>
+            </TouchableOpacity>
+          </Link>
+        </View>
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -116,9 +166,9 @@ export default function FeeSettings() {
 
         {message ? <Text style={styles.message}>{message}</Text> : null}
 
-        <Link href="/payments" asChild>
+        <Link href="/admin-dashboard" asChild>
           <TouchableOpacity style={styles.backButton}>
-            <Text style={styles.backText}>← Back to Payments</Text>
+            <Text style={styles.backText}>← Back to Admin Dashboard</Text>
           </TouchableOpacity>
         </Link>
       </View>
@@ -127,10 +177,7 @@ export default function FeeSettings() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#edf3ff",
-  },
+  container: { flex: 1, backgroundColor: "#edf3ff" },
   header: {
     backgroundColor: "#12306d",
     padding: 40,
@@ -138,27 +185,10 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
   },
-  icon: {
-    fontSize: 44,
-    marginBottom: 10,
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "bold",
-    color: "white",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#dbe7ff",
-    marginTop: 8,
-    textAlign: "center",
-  },
-  card: {
-    backgroundColor: "white",
-    margin: 18,
-    padding: 18,
-    borderRadius: 16,
-  },
+  icon: { fontSize: 44, marginBottom: 10 },
+  title: { fontSize: 34, fontWeight: "bold", color: "white" },
+  subtitle: { fontSize: 16, color: "#dbe7ff", marginTop: 8, textAlign: "center" },
+  card: { backgroundColor: "white", margin: 18, padding: 18, borderRadius: 16 },
   label: {
     fontSize: 17,
     fontWeight: "bold",
@@ -182,14 +212,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 18,
   },
-  disabledButton: {
-    backgroundColor: "#86efac",
+  adminButton: {
+    backgroundColor: "#003366",
+    padding: 16,
+    borderRadius: 30,
+    alignItems: "center",
+    marginTop: 18,
   },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+  disabledButton: { backgroundColor: "#86efac" },
+  buttonText: { color: "white", fontSize: 18, fontWeight: "bold" },
   message: {
     marginTop: 18,
     textAlign: "center",
@@ -197,13 +228,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#12306d",
   },
-  backButton: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  backText: {
-    color: "#12306d",
+  errorMessage: {
+    marginTop: 18,
+    textAlign: "center",
     fontSize: 16,
     fontWeight: "bold",
+    color: "#b00020",
   },
+  backButton: { marginTop: 20, alignItems: "center" },
+  backText: { color: "#12306d", fontSize: 16, fontWeight: "bold" },
 });
